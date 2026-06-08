@@ -66,7 +66,12 @@ list_metapkgs() {
 }
 
 clean_cache() {
-    if [[ -d "${cache_dir}" ]]; then
+    test_var cache_dir $cache_dir
+    [[ -d "${cache_dir}" ]] || errf "directory not found: ${cache_dir}"
+    if [[ "$1" == old ]]; then
+        rm -rf ${cache_dir}/*.old
+        echo "==> cleaned $(tilde_path $cache_dir)/*.old"
+    else
         rm -rf ${cache_dir}/*
         echo "==> cleaned $(tilde_path $cache_dir)/"
     fi
@@ -134,7 +139,8 @@ case "${1}" in
         list_metapkgs
         ;;
     clean)
-        clean_cache
+        shift
+        clean_cache $@
         ;;
     ""|-h|--help)
         get_help
