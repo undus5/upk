@@ -57,6 +57,7 @@ fetch_github_ver_url() {
     echo "${ver},${url}"
     rm $json_tmpfile
 }
+# for testing, since there're rate limits for github api requests
 # fetch_github_ver_url() {
 #     test_var pkg_id $pkg_id
 #     local repo="$1"
@@ -131,18 +132,6 @@ install_github_appimage() {
     cp $dl_file $exec_path
     echo "==> installed '$(tilde_path $installed_dir)'"
     write_ver "$remote_ver"
-}
-
-self_update_pkg_info() {
-    test_var pkg_id $pkg_id
-    test_var installed_dir $installed_dir
-    local url="$1"
-    printf "==> ${pkg_id} needs manually installation for the first time\n"
-    printf "==> then it can auto update itself \n"
-    printf "==> 1. download from: ${url}\n"
-    printf "==> 2. put into '$(tilde_path $installed_dir)'\n"
-    printf "==> 3. enable desktop entry\n"
-    printf "==> 4. lock package (to mark package as installed)\n"
 }
 
 remove_pkg() {
