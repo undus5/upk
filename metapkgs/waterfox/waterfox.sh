@@ -39,7 +39,7 @@ install_pkg() {
     tar xf ${dl_file} -C ${cache_dir}
     mv ${unpack_dir} ${installed_dir}
     echo "==> installed '$(tilde_path $installed_dir)'"
-    write_ver "$remote_ver"
+    lock_pkg
 }
 
 source ${upk_src}/metapkg-post.in
