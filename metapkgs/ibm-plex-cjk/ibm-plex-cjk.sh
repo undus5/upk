@@ -78,7 +78,7 @@ install_pkg() {
     mv ${unpack_dir}/${kr_name}/${rel_path} ${installed_dir}/${kr_name}
     echo "==> installed '$(tilde_path ${installed_dir})/${kr_name}'"
     rm -r ${unpack_dir}
-    lock_pkg
+    lock_ver
 }
 
 source ${upk_src}/metapkg-post.in

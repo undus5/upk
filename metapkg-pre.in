@@ -24,11 +24,11 @@ write_ver() {
     echo "==> wrote '$ver' to '$(tilde_path $ver_file)'"
 }
 
-lock_pkg() {
+lock_ver() {
     write_ver "locked" "$pkg_id"
 }
 
-unlock_pkg() {
+unlock_ver() {
     write_ver "" "$pkg_id"
 }
 

@@ -27,7 +27,7 @@ install_pkg() {
     self_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
     cp -f ${self_dir}/${exec_name} ${installed_dir}/
     echo "==> installed '$(tilde_path ${installed_dir})/${exec_name}'"
-    lock_pkg
+    lock_ver
 }
 
 remove_pkg() {

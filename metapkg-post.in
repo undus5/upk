@@ -23,10 +23,10 @@ case "${1}" in
         post_disable
         ;;
     lock)
-        lock_pkg
+        lock_ver
         ;;
     unlock)
-        unlock_pkg
+        unlock_ver
         ;;
     launch)
         shift; launch_pkg $@

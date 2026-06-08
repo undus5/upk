@@ -8,24 +8,21 @@ pkg_id=$(basename $metapkg_dir)
 cache_old=${cache_dir}/${pkg_id}.old
 
 installed_dir=${apps_dir}/${pkg_id}
-exec_path=${installed_dir}/Browser/start-tor-browser
-
-fetch_html_ver() {
-    local url=""https://dist.torproject.org/torbrowser/""
-    local pattern_v="[0-9]+\.[0-9]+\.[0-9]+"
-    local pattern_h="href=\"${pattern_v}"
-    curl -sL $url | grep -Eo "$pattern_h" | grep -Eo "$pattern_v"
-}
+exec_path=${installed_dir}/Telegram
 
 install_pkg() {
+    test_var cache_old $cache_old
     test_var installed_dir $installed_dir
+    local repo="telegramdesktop/tdesktop"
+    local filename_tpl="tsetup.${ver_placeholder}.tar.xz"
     local local_ver=$(get_local_ver)
     [[ "$local_ver" == "locked" ]] && exit 0
-    local remote_ver=$(fetch_html_ver)
+    local ver_url=$(fetch_github_ver_url "$repo" "$filename_tpl")
+    local remote_ver=
+    local dl_url=
+    IFS="," read -r remote_ver dl_url <<< "$ver_url"
     [[ -z "$(compare_dot_vers $remote_ver $local_ver)" ]] && exit 0
-    local filename="tor-browser-linux-x86_64-${remote_ver}.tar.xz"
-    local dl_url="https://www.torproject.org/dist/torbrowser"
-    dl_url+="/${remote_ver}/${filename}"
+    local filename=${filename_tpl/$ver_placeholder/$remote_ver}
     dl_file=${cache_dir}/${filename}
     echo "==> downloading ${filename} ..."
     if [[ -f "${dl_file}" ]]; then
@@ -37,7 +34,7 @@ install_pkg() {
     [[ -d $cache_old ]] && rm -r $cache_old
     [[ -d $installed_dir ]] && mv $installed_dir $cache_old
     # backup end
-    unpack_dir=${cache_dir}/${pkg_id}
+    unpack_dir=${cache_dir}/Telegram
     tar xf ${dl_file} -C ${cache_dir}
     mv ${unpack_dir} ${installed_dir}
     echo "==> installed '$(tilde_path $installed_dir)'"

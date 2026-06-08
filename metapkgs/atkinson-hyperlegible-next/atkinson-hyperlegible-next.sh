@@ -23,7 +23,7 @@ install_pkg() {
     # backup end
     mv ${cache_dir}/${pkg_id} $installed_dir
     echo "==> installed '$(tilde_path $installed_dir)'"
-    lock_pkg
+    lock_ver
 }
 
 source ${upk_src}/metapkg-post.in
