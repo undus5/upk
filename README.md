@@ -20,3 +20,6 @@ Usage: upk <action> [app_id]
    -h|--help
 ```
 
+Current supported packages is under `metapkgs` folder, you can write your own
+and put into `~/upk/metapkgs/`.
+
