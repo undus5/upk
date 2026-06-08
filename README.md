@@ -16,7 +16,7 @@ Usage: upk <action> [app_id]
    update         [app_id[s]] [-y]  : empty app_id means update all
    enable|disable <app_id>          : enable/disable desktop entry
    lock           <app_id>          : prevent update and mark installed
-   clean                            : clean cache
+   clean          [old]             : clean cache
    -h|--help
 ```
 

@@ -10,7 +10,7 @@ get_help() {
     printf "   update         [app_id[s]] [-y]  : empty app_id means update all\n"
     printf "   enable|disable <app_id>          : enable/disable desktop entry\n"
     printf "   lock           <app_id>          : prevent update and mark installed\n"
-    printf "   clean                            : clean cache\n"
+    printf "   clean          [old]             : clean cache\n"
     printf "   -h|--help\n"
 }
 
