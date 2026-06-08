@@ -46,12 +46,21 @@ get_confirmation() {
 }
 
 list_metapkgs() {
+    local ids1=
+    local ids2=
+    local pkg_ids=
     mapfile -t ids1 < <(ls -1 ${self_dir}/metapkgs/)
     mapfile -t ids2 < <(ls -1 ${data_dir}/metapkgs/)
     mapfile -t pkg_ids < <(printf "%s\n" "${ids1[@]}" "${ids2[@]}" | sort -u)
+    local max_len=0
+    local curr_len=0
     for pkg_id in "${pkg_ids[@]}"; do
-        printf "$pkg_id"
-        [[ -f "${vers_dir}/${pkg_id}.txt" ]] && printf " [installed]"
+        curr_len=${#pkg_id}
+        (( curr_len > max_len )) && max_len=$curr_len
+    done
+    for pkg_id in "${pkg_ids[@]}"; do
+        printf "%-${max_len}s" "$pkg_id"
+        [[ -f "${vers_dir}/${pkg_id}.txt" ]] && printf "  [installed]"
         printf "\n"
     done
 }
