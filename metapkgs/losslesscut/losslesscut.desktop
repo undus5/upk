@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=LosslessCut
+Icon=losslesscut
+Exec=upk launch losslesscut
+Terminal=false
+Type=Application
+MimeType=text/plain;
+Categories=Video;
+StartupNotify=true
+

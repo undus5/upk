@@ -1,0 +1,22 @@
+# upk
+
+User-end package manager
+
+Features:
+
+- downloading binary packages directly from original upstream repos
+- small footprints, all data stored under `~/upk/`
+
+Usage:
+
+```
+Usage: upk <action> [app_id]
+   list                             : list available packages
+   install|remove <app_id[s]> [-y]  : -y skip confirmation
+   update         [app_id[s]] [-y]  : empty app_id means update all
+   enable|disable <app_id>          : enable/disable desktop entry
+   lock           <app_id>          : prevent update and mark installed
+   clean                            : clean cache
+   -h|--help
+```
+

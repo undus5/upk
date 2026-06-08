@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Zed
+Icon=zed
+Exec=upk launch zed %U
+Type=Application
+StartupNotify=true
+Categories=Utility;TextEditor;Development;IDE;
+MimeType=text/plain;application/x-zerosize;x-scheme-handler/zed;
+

@@ -1,0 +1,39 @@
+#!/bin/bash
+
+set -e
+
+data_dir=${UPK_DATA:-~/upk}
+[[ -d ${data_dir} ]] || mkdir -p ${data_dir}
+
+apps_dir=$data_dir/apps
+bins_dir=$data_dir/bins
+vers_dir=$data_dir/vers
+cache_dir=$data_dir/cache
+
+[[ -d $apps_dir ]] || mkdir -p $apps_dir
+[[ -d $bins_dir ]] || mkdir -p $bins_dir
+[[ -d $vers_dir ]] || mkdir -p $vers_dir
+[[ -d $cache_dir ]] || mkdir -p $cache_dir
+
+fonts_dir=~/.local/share/fonts
+icons_dir=~/.local/share/icons/hicolor/256x256/apps
+entries_dir=~/.local/share/applications
+
+[[ -d $fonts_dir ]] || mkdir -p $fonts_dir
+[[ -d $icons_dir ]] || mkdir -p $icons_dir
+[[ -d $entries_dir ]] || mkdir -p $entries_dir
+
+# helper functions
+errf() { printf "${@}\n" >&2; exit 1; }
+test_cmd() { command -v $1 &>/dev/null || errf "command not found: $@"; }
+test_var() { [[ -n "$2" ]] || errf "undefined var: $1"; }
+# replace '/home/*' with '~' in path for display
+tilde_path() { echo "$1" | sed "s#$(realpath ~)#~#"; }
+
+get_local_ver() {
+    [[ -n "$1" ]] && pkg_id="$1"
+    test_var pkg_id ${pkg_id}
+    local ver_file=${vers_dir}/${pkg_id}.txt
+    [[ -f "${ver_file}" ]] && cat ${ver_file}
+}
+

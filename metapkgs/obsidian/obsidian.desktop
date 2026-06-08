@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Obsidian
+Icon=obsidian
+Exec=upk launch obsidian
+Terminal=false
+Type=Application
+MimeType=text/plain;
+Categories=TextEditor;Development;
+StartupNotify=true
+

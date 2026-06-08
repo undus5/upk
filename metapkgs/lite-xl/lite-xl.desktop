@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Lite XL
+Icon=lite-xl
+Exec=upk launch lite-xl %F
+Terminal=false
+Type=Application
+MimeType=text/plain;
+Categories=TextEditor;Development;
+StartupNotify=true
+

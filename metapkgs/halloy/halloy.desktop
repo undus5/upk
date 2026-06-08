@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Halloy
+Keywords=IRC;
+Icon=halloy
+StartupWMClass=org.squidowl.halloy
+Exec=upk launch halloy %U
+Terminal=false
+Type=Application
+Categories=Network;IRCClient;
+MimeType=x-scheme-handler/irc;x-scheme-handler/ircs;x-scheme-handler/halloy;
+

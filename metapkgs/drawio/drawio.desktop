@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Drawio
+Icon=drawio
+Exec=upk launch drawio
+Terminal=false
+Type=Application
+Categories=Development;
+StartupNotify=true
+

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=LocalSend
+Icon=localsend
+Exec=upk launch localsend
+Terminal=false
+Type=Application
+Categories=Network;Utility;
+StartupNotify=true
+

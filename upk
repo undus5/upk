@@ -1,0 +1,137 @@
+#!/bin/bash
+
+self_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
+source ${self_dir}/const.in
+
+get_help() {
+    printf "Usage: $(basename ${0}) <action> [app_id]\n"
+    printf "   list                             : list available packages\n"
+    printf "   install|remove <app_id[s]> [-y]  : -y skip confirmation\n"
+    printf "   update         [app_id[s]] [-y]  : empty app_id means update all\n"
+    printf "   enable|disable <app_id>          : enable/disable desktop entry\n"
+    printf "   lock           <app_id>          : prevent update and mark installed\n"
+    printf "   clean                            : clean cache\n"
+    printf "   -h|--help\n"
+}
+
+trim_pkg_id() {
+    echo "${1//\//}" # remove slash
+}
+
+get_metapkg_dir() {
+    local pkg_id="$1"
+    test_var pkg_id ${pkg_id}
+    local dir=${self_dir}/metapkgs/${pkg_id}
+    [[ -d $dir ]] || dir=${data_dir}/${pkg_id}
+    [[ -d $dir ]] && echo $dir || errf "==> metapkg not found: $pkg_id"
+}
+
+get_confirmation() {
+    local sub_cmd="$1"
+    local skip_flag="$2"
+    shift && shift
+    local pkg_ids=("$@")
+    local confirmation=
+    if [[ "$skip_flag" != "-y" ]]; then
+        printf "Selected packages:\n"
+        for id in "${pkg_ids[@]}"; do
+            printf " $id"
+        done
+        printf "\n"
+        read -r -p "${sub_cmd^} packages? [y/N]: " confirmation
+    else
+        confirmation=y
+    fi
+    [[ "${confirmation}" =~ ^[yY]$ ]] || exit 1
+}
+
+list_metapkgs() {
+    mapfile -t ids1 < <(ls -1 ${self_dir}/metapkgs/)
+    mapfile -t ids2 < <(ls -1 ${data_dir}/metapkgs/)
+    mapfile -t pkg_ids < <(printf "%s\n" "${ids1[@]}" "${ids2[@]}" | sort -u)
+    for pkg_id in "${pkg_ids[@]}"; do
+        printf "$pkg_id"
+        [[ -f "${vers_dir}/${pkg_id}.txt" ]] && printf " [installed]"
+        printf "\n"
+    done
+}
+
+clean_cache() {
+    if [[ -d "${cache_dir}" ]]; then
+        rm -r ${cache_dir}/*
+        echo "==> cleaned $(tilde_path $cache_dir)/"
+    fi
+}
+
+update_installed() {
+    local skip_confirm="$1"
+    local pkg_ids=()
+    local pkg_scripts=()
+    local ver=
+    mapfile -t ver_files < <(ls -1 ${vers_dir}/)
+    [[ "${#ver_files[@]}" == "0" ]] && errf "==> no packages need update"
+    for verf in "${ver_files[@]}"; do
+        pkg_id=${verf%.*}
+        pkg_scripts+=($(get_metapkg_dir "$pkg_id"))
+        ver=$(get_local_ver "$pkg_id")
+        [[ "$ver" != "locked" ]] && pkg_ids+=("$pkg_id")
+    done
+    [[ "${#pkg_ids[@]}" == "0" ]] && errf "==> no packages need update"
+    get_confirmation "update" "$skip_confirm" "${pkg_ids[@]}"
+    for pkg_script in "${pkg_scripts[@]}"; do
+        ${pkg_script} $sub_cmd
+    done
+}
+
+case "${1}" in
+    install|update|remove)
+        sub_cmd="$1"; shift
+        skip_confirm=
+        if [[ "$sub_cmd" == "update" ]]; then
+            if [[ -z "$@" ]]; then
+                update_installed; exit 0
+            elif [[ "$1" == "-y" ]]; then
+                skip_confirm="-y"
+                shift
+                if [[ -z "$@" ]]; then
+                    update_installed -y; exit 0
+                fi
+            fi
+        fi
+        pkg_ids=()
+        pkg_scripts=()
+        for arg in "$@"; do
+            arg=$(trim_pkg_id "$arg")
+            if [[ "$arg" == "-y" ]]; then
+                skip_confirm="-y"
+            else
+                pkg_scripts+=("$(get_metapkg_dir "$arg")/${arg}.sh")
+                pkg_ids+=("$arg")
+            fi
+        done
+        get_confirmation "$sub_cmd" "$skip_confirm" "${pkg_ids[@]}"
+        for pkg_script in "${pkg_scripts[@]}"; do
+            ${pkg_script} $sub_cmd
+        done
+        ;;
+    enable|disable|lock|unlock|launch)
+        sub_cmd="$1"
+        pkg_id=$(trim_pkg_id "$2")
+        metapkg_dir=$(get_metapkg_dir $pkg_id)
+        shift && shift
+        ${metapkg_dir}/${pkg_id}.sh $sub_cmd $@
+        ;;
+    list)
+        list_metapkgs
+        ;;
+    clean)
+        clean_cache
+        ;;
+    ""|-h|--help)
+        get_help
+        ;;
+    *)
+        get_help; exit 1
+        ;;
+esac
+

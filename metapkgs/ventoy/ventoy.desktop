@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Ventoy
+Path=VENTOY_DIR
+Exec=upk launch ventoy
+Icon=ventoy
+Type=Application
+StartupNotify=true
+Categories=Utility;
+

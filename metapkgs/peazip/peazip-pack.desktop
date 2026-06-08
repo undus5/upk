@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=PeaZip Pack File
+Icon=peazip-pack
+Exec=upk launch peazip -add2archive %F
+Terminal=false
+Type=Application
+Categories=Utility;Archiving;Compression;
+MimeType=application/octet-stream;
+StartupNotify=true
+

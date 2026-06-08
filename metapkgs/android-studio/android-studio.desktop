@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Android Studio
+Exec=upk launch android-studio
+Icon=android-studio
+Terminal=false
+Type=Application
+Categories=Development;
+StartupNotify=true
+
