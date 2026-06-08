@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Type=Application
+Name=IBKR Desktop
+Exec=upk launch ibkr-desktop
+Icon=ibkr
+Categories=Application;
+StartupWMClass=install4j-launcher-Main
+
