@@ -18,7 +18,7 @@ install_pkg() {
     test_cmd unzip
     unzip -q ${self_dir}/${pkg_id}.zip -d $cache_dir
     # backup old installed
-    [[ -d $cache_old ]] && rm -r $cache_old
+    [[ -d $cache_old ]] && rm -rf $cache_old
     [[ -d $installed_dir ]] && mv $installed_dir $cache_old
     # backup end
     mv ${cache_dir}/${pkg_id} $installed_dir

@@ -34,7 +34,7 @@ remove_pkg() {
     test_var pkg_id $pkg_id
     test_var installed_dir $installed_dir
     if [[ -d $installed_dir ]]; then
-        rm -r $installed_dir
+        rm -rf $installed_dir
         echo "==> removed '$(tilde_path $installed_dir)'"
     fi
     local ver_file=${vers_dir}/${pkg_id}.txt

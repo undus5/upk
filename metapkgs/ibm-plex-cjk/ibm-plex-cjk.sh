@@ -54,7 +54,7 @@ install_pkg() {
         curl --create-dirs -o ${kr_dl_file} -#L ${kr_url}
     fi
     # backup old installed
-    [[ -d $cache_old ]] && rm -r $cache_old
+    [[ -d $cache_old ]] && rm -rf $cache_old
     [[ -d $installed_dir ]] && mv $installed_dir $cache_old
     # backup end
     unpack_dir=${cache_dir}/${pkg_id}
@@ -77,7 +77,7 @@ install_pkg() {
     echo "==> installed '$(tilde_path ${installed_dir})/${jp_name}'"
     mv ${unpack_dir}/${kr_name}/${rel_path} ${installed_dir}/${kr_name}
     echo "==> installed '$(tilde_path ${installed_dir})/${kr_name}'"
-    rm -r ${unpack_dir}
+    rm -rf ${unpack_dir}
     lock_ver
 }
 

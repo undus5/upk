@@ -31,7 +31,7 @@ install_pkg() {
         curl --create-dirs -o ${dl_file} -#L ${dl_url}
     fi
     # backup old installed
-    [[ -d $cache_old ]] && rm -r $cache_old
+    [[ -d $cache_old ]] && rm -rf $cache_old
     [[ -d $installed_dir ]] && mv $installed_dir $cache_old
     # backup end
     unpack_dir=${dl_file%.tar.*}

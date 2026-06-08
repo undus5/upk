@@ -124,7 +124,7 @@ install_github_appimage() {
         curl --create-dirs -o ${dl_file} -#L ${dl_url}
     fi
     # backup old installed
-    [[ -d $cache_old ]] && rm -r $cache_old
+    [[ -d $cache_old ]] && rm -rf $cache_old
     [[ -d $installed_dir ]] && mv $installed_dir $cache_old
     # backup end
     mkdir -p $installed_dir
@@ -138,7 +138,7 @@ remove_pkg() {
     test_var pkg_id $pkg_id
     test_var installed_dir $installed_dir
     if [[ -d $installed_dir ]]; then
-        rm -r $installed_dir
+        rm -rf $installed_dir
         echo "==> removed '$(tilde_path $installed_dir)'"
     fi
     local ver_file=${vers_dir}/${pkg_id}.txt

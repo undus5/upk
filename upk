@@ -67,7 +67,7 @@ list_metapkgs() {
 
 clean_cache() {
     if [[ -d "${cache_dir}" ]]; then
-        rm -r ${cache_dir}/*
+        rm -rf ${cache_dir}/*
         echo "==> cleaned $(tilde_path $cache_dir)/"
     fi
 }
