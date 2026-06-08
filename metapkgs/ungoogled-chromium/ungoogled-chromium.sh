@@ -12,7 +12,7 @@ exec_path=${installed_dir}/${pkg_id}.AppImage
 
 # https://github.com/NeverDecaf/chromium-web-store
 
-fetch_github_ver() {
+fetch_release_ver() {
     test_cmd curl; test_cmd jq
     local release_api="https://api.github.com/repos"
     local release_api+="/ungoogled-software/ungoogled-chromium/releases"
@@ -84,7 +84,7 @@ install_pkg() {
     test_var exec_path $exec_path
     local local_ver=$(get_local_ver)
     [[ "$local_ver" == "locked" ]] && exit 0
-    local remote_ver=$(fetch_github_ver)
+    local remote_ver=$(fetch_release_ver)
     local filename="ungoogled-chromium-${remote_ver}-x86_64.AppImage"
     local dl_url="https://github.com"
     dl_url+="/ungoogled-software/ungoogled-chromium-portablelinux"

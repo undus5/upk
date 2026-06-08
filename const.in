@@ -16,11 +16,12 @@ cache_dir=$data_dir/cache
 [[ -d $cache_dir ]] || mkdir -p $cache_dir
 
 fonts_dir=~/.local/share/fonts
-icons_dir=~/.local/share/icons/hicolor/256x256/apps
+icons_dir=~/.local/share/icons
+hicolor_dir=${icons_dir}/hicolor/256x256/apps
 entries_dir=~/.local/share/applications
 
 [[ -d $fonts_dir ]] || mkdir -p $fonts_dir
-[[ -d $icons_dir ]] || mkdir -p $icons_dir
+[[ -d $hicolor_dir ]] || mkdir -p $hicolor_dir
 [[ -d $entries_dir ]] || mkdir -p $entries_dir
 
 # helper functions

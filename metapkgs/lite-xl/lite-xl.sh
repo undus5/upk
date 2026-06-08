@@ -13,7 +13,7 @@ exec_path=${installed_dir}/${pkg_id}.AppImage
 install_pkg() {
     local repo="lite-xl/lite-xl"
     local filename_tpl="LiteXL-v${ver_placeholder}-addons-x86_64.AppImage"
-    install_github_appimage "$repo" "$filename_tpl"
+    install_release_appimage "$repo" "$filename_tpl"
 }
 
 source ${upk_src}/metapkg-post.in

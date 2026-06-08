@@ -17,7 +17,7 @@ install_pkg() {
     local filename_tpl="tsetup.${ver_placeholder}.tar.xz"
     local local_ver=$(get_local_ver)
     [[ "$local_ver" == "locked" ]] && exit 0
-    local ver_url=$(fetch_github_ver_url "$repo" "$filename_tpl")
+    local ver_url=$(fetch_release_ver_url "$repo" "$filename_tpl")
     local remote_ver=
     local dl_url=
     IFS="," read -r remote_ver dl_url <<< "$ver_url"

@@ -13,7 +13,7 @@ exec_path=${installed_dir}/${pkg_id}.AppImage
 install_pkg() {
     local repo="localsend/localsend"
     local filename_tpl="LocalSend-${ver_placeholder}-linux-x86-64.AppImage"
-    install_github_appimage "$repo" "$filename_tpl"
+    install_release_appimage "$repo" "$filename_tpl"
 }
 
 exec_name=open-terminal-here.sh
