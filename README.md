@@ -1,6 +1,6 @@
 # upk
 
-User-end package manager
+Linux user-end package manager
 
 Features:
 
