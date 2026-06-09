@@ -151,8 +151,8 @@ enable_entry() {
     done
     update-desktop-database ${entries_dir}
     for f in ${metapkg_dir}/*.png; do
-        cp -f $f ${hicolor_dir}/
-        echo "==> installed '$(tilde_path ${hicolor_dir}/$(basename $f))'"
+        cp -f $f ${icons_dir}/
+        echo "==> installed '$(tilde_path ${icons_dir}/$(basename $f))'"
     done
 }
 
@@ -166,7 +166,7 @@ disable_entry() {
     done
     update-desktop-database ${entries_dir}
     for f in ${metapkg_dir}/*.png; do
-        ff=${hicolor_dir}/$(basename $f)
+        ff=${icons_dir}/$(basename $f)
         [[ -f $ff ]] && rm $ff && echo "==> removed '$(tilde_path $ff)'"
     done
 }
