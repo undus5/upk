@@ -34,12 +34,12 @@ install_pkg() {
     [[ -d $installed_dir ]] && mv $installed_dir $cache_old
     # backup end
     unpack_dir=${dl_file%.*}
-    mkdir -p ${unpack_dir}
+    mkdir -p $unpack_dir
     echo "==> unpacking ${filename} ..."
-    unzip -q ${dl_file} -d ${unpack_dir}
-    mkdir -p ${installed_dir}
+    unzip -q $dl_file -d $unpack_dir
+    mkdir -p $installed_dir
     mv ${unpack_dir}/fonts/ttf/JetBrainsMonoNL*.ttf ${installed_dir}/
-    rm -rf ${unpack_dir}
+    rm -rf $unpack_dir
     echo "==> installed '$(tilde_path $installed_dir)'"
     write_ver "$remote_ver"
 }
