@@ -5,7 +5,7 @@ Linux user-end package manager
 Features:
 
 - downloading binary packages directly from original upstream repos
-- small footprints, all data stored under `~/upk/`
+- small footprints, all data stored under `~/upk.d/`
 
 Usage:
 
@@ -21,5 +21,5 @@ Usage: upk <action> [app_id]
 ```
 
 Current supported packages is under `metapkgs` folder, you can write your own
-and put into `~/upk/metapkgs/`.
+and put into `~/upk.d/metapkgs/`.
 
