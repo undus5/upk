@@ -2,7 +2,7 @@
 
 set -e
 
-data_dir=${UPK_DATA:-~/upk}
+data_dir=${UPK_DATA:-~/upk.d}
 [[ -d ${data_dir} ]] || mkdir -p ${data_dir}
 
 apps_dir=$data_dir/apps
