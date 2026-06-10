@@ -1,7 +1,7 @@
 #!/bin/bash
 
 self_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
-source ${self_dir}/const.in
+source ${self_dir}/includes/const.in
 
 get_help() {
     printf "Usage: $(basename ${0}) <action> [app_id]\n"
