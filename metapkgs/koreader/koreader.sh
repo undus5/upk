@@ -1,6 +1,6 @@
 #!/bin/bash
 upk_src=$(dirname $(realpath $(which upk)))
-source ${upk_src}/metapkg-pre.in
+source ${upk_src}/includes/metapkg-pre.in
 
 metapkg_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
 pkg_id=$(basename $metapkg_dir)
@@ -15,5 +15,5 @@ install_pkg() {
     install_release_appimage "$repo" "$filename_tpl"
 }
 
-source ${upk_src}/metapkg-post.in
+source ${upk_src}/includes/metapkg-post.in
 
