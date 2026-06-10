@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Ungoogled Chromium
-Icon=chromium
+Icon=ungoogled-chromium
 StartupWMClass=chromium
 Exec=upk launch ungoogled-chromium %U
 Terminal=false
