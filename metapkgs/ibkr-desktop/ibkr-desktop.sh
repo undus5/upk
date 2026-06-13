@@ -33,7 +33,7 @@ install_pkg() {
    chmod u+x $dl_file
    cp $dl_file ${unpack_dir}/
    ${metapkg_dir}/bubblewrap.sh $unpack_dir ~/${filename}
-   rm ${unpack_dir}/${filename}
+   rm -f ${unpack_dir}/${filename}
    mv ${unpack_dir} ${installed_dir}
    echo "==> installed '$(tilde_path $installed_dir)'"
    lock_ver

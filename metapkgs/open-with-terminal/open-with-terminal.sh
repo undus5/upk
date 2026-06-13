@@ -39,19 +39,19 @@ remove_pkg() {
    fi
    local ver_file=${vers_dir}/${pkg_id}.txt
    if [[ -f $ver_file ]]; then
-      rm $ver_file
+      rm -f $ver_file
       echo "==> removed '$(tilde_path $ver_file)'"
    fi
 }
 
 post_enable() {
-   ln -sf ${installed_dir}/${exec_name} $xdg_exec
+   ln -sf ../apps/open-terminal-here.sh $xdg_exec
    echo "==> installed '$(tilde_path $xdg_exec)'"
 }
 
 post_disable() {
-   if [[ -e $xdg_exec ]]; then
-      rm $xdg_exec
+   if [[ -L $xdg_exec ]]; then
+      rm -f $xdg_exec
       echo "==> removed '$(tilde_path $xdg_exec)'"
    fi
 }

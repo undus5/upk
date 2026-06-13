@@ -11,29 +11,15 @@ installed_dir=${apps_dir}/${pkg_id}
 exec_path=${installed_dir}/bin/halloy
 
 install_pkg() {
-   test_var cache_old $cache_old
-   test_var installed_dir $installed_dir
    local repo="squidowl/halloy"
    local filename_tpl="halloy-${ver_placeholder}-x86_64-linux.tar.gz"
-   local local_ver=$(get_local_ver)
-   [[ "$local_ver" == "locked" ]] && exit 0
-   local ver_url=$(fetch_release_ver_url "$repo" "$filename_tpl")
-   local remote_ver=
-   local dl_url=
-   IFS="," read -r remote_ver dl_url <<< "$ver_url"
-   [[ -z "$(compare_dot_vers $remote_ver $local_ver)" ]] && exit 0
-   local filename=${filename_tpl/$ver_placeholder/$remote_ver}
-   dl_file=${cache_dir}/${filename}
-   echo "==> downloading ${filename} ..."
-   if [[ -f "${dl_file}" ]]; then
-      echo "==> found in cache"
-   else
-      curl --create-dirs -o ${dl_file} -#L ${dl_url}
-   fi
-   # backup old installed
-   [[ -d $cache_old ]] && rm -rf $cache_old
-   [[ -d $installed_dir ]] && mv $installed_dir $cache_old
-   # backup end
+
+   local path_url=$(test_release_ver_url "$repo" "$filename_tpl")
+   [[ -n "$path_url" ]] || exit 1
+   IFS="," read -r remote_ver dl_url save_path <<< "$path_url"
+   download_file $dl_url $save_path
+   backup_old_installed
+
    unpack_dir=${dl_file%.tar.*}
    mkdir -p ${unpack_dir}
    tar xf ${dl_file} -C ${unpack_dir}

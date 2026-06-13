@@ -15,22 +15,12 @@ installed_dir_3=${icons_dir}/Qogir-Light
 
 install_pkg() {
    local repo="vinceliuice/Qogir-icon-theme"
-   local local_ver=$(get_local_ver)
-   [[ "$local_ver" == "locked" ]] && exit 0
-   local date_sha=$(fetch_commit_date_sha "$repo")
-   local remote_ver=
-   local sha=
-   IFS="," read -r remote_ver sha <<< "$date_sha"
-   [[ -z "$(compare_date_vers $remote_ver $local_ver)" ]] && exit 0
-   local dl_url="https://github.com/${repo}/archive/${sha}.zip"
-   local filename=Qogir-icon-theme-${sha}.zip
-   dl_file=${cache_dir}/${filename}
-   echo "==> downloading ${filename} ..."
-   if [[ -f "${dl_file}" ]]; then
-      echo "==> found in cache"
-   else
-      curl --create-dirs -o ${dl_file} -#L ${dl_url}
-   fi
+
+   local path_url=$(test_commit_date_sha "$repo")
+   [[ -n "$path_url" ]] || exit 1
+   IFS="," read -r remote_ver dl_url save_path <<< "$path_url"
+   download_file $dl_url $save_path
+
    # backup old installed
    [[ -d $cache_old_1 ]] && rm -rf $cache_old_1
    [[ -d $cache_old_2 ]] && rm -rf $cache_old_2
@@ -39,8 +29,9 @@ install_pkg() {
    [[ -d $installed_dir_2 ]] && mv $installed_dir_2 $cache_old_2
    [[ -d $installed_dir_3 ]] && mv $installed_dir_3 $cache_old_3
    # backup end
-   local unpack_dir=${dl_file%.zip}
-   unzip -q $dl_file -d $cache_dir
+
+   local unpack_dir=${save_path%.zip}
+   unzip -q $save_path -d $cache_dir
    ${unpack_dir}/install.sh --theme default
    rm -rf ${unpack_dir}
    write_ver "$remote_ver"
@@ -62,7 +53,7 @@ remove_pkg() {
    fi
    local ver_file=${vers_dir}/${pkg_id}.txt
    if [[ -f $ver_file ]]; then
-      rm $ver_file
+      rm -f $ver_file
       echo "==> removed '$(tilde_path $ver_file)'"
    fi
 }

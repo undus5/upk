@@ -8,12 +8,10 @@ pkg_id=$(basename $metapkg_dir)
 cache_old=${cache_dir}/${pkg_id}.old
 
 installed_dir=${apps_dir}/${pkg_id}
-exec_path=${installed_dir}/VentoyGUI.x86_64
-exec_cli=ventoy-cli.sh
 
 install_pkg() {
-   local repo="ventoy/Ventoy"
-   local filename_tpl="ventoy-${ver_placeholder}-linux.tar.gz"
+   local repo="filebrowser/filebrowser"
+   local filename_tpl="linux-amd64-filebrowser.tar.gz"
 
    local path_url=$(test_release_ver_url "$repo" "$filename_tpl")
    [[ -n "$path_url" ]] || exit 1
@@ -21,23 +19,24 @@ install_pkg() {
    download_file $dl_url $save_path
    backup_old_installed
 
-   unpack_dir=${cache_dir}/${pkg_id}-${remote_ver}
-   tar xf ${dl_file} -C ${cache_dir}
+   unpack_dir=${cache_dir}/${pkg_id}
+   mkdir -p $unpack_dir
+   tar xf ${dl_file} -C ${unpack_dir}
    mv ${unpack_dir} ${installed_dir}
    echo "==> installed '$(tilde_path $installed_dir)'"
    write_ver "$remote_ver"
 }
 
 post_enable() {
-   sed -i "s#VENTOY_DIR#${installed_dir}#" ${entries_dir}/${pkg_id}.desktop
-   cp -f ${metapkg_dir}/${exec_cli} ${bins_dir}
-   echo "==> installed '$(tilde_path ${bins_dir})/${exec_cli}'"
+   cp -f ${metapkg_dir}/fbrowser.sh ${bins_dir}/
+   echo "==> installed '$(tilde_path ${bins_dir}/fbrowser.sh)'"
 }
 
 post_disable() {
-   if [[ -f "${bins_dir}/${exec_cli}" ]]; then
-      rm -f ${bins_dir}/${exec_cli}.sh
-      echo "==> removed '$(tilde_path ${bins_dir})/${exec_cli}'"
+   local f=${bins_dir}/fbrowser.sh
+   if [[ -f $f ]]; then
+      rm -f $f
+      echo "==> removed '$(tilde_path $f)'"
    fi
 }
 

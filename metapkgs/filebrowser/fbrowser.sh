@@ -1,23 +1,35 @@
 #!/usr/bin/bash
 
-db_file=
-port=${FILE_BROWSER_PORT:-8182}
-share_dir=${FILE_BROWSER_DIR:-$(realpath ~/Public)}
+# ~/.local/share/filebrowser/config.in
+# PORT=8586
+# PUBLIC_DIR=~/Public
 
-if [[ -n $FILE_BROWSER_DB && -d $FILE_BROWSER_DB ]]; then
-   db_file=$FILE_BROWSER_DB
-else
-   db_dir=~/.local/share/filebrowser
-   [[ -d $db_dir ]] || mkdb_dir -p $db_dir
-   db_file=${db_dir}/filebrowser.db
-fi
+db_dir=~/.local/share/filebrowser
+[[ -d $db_dir ]] || mkdir -p $db_dir
+
+db_file=${db_dir}/filebrowser.db
+
+conf_in=${db_dir}/config.in
+[[ -f $conf_in ]] && source $conf_in
+
+port=
+[[ -n "$PORT" ]] && port=$PORT
+(( port > 1024 && port < 65536 )) || port=
+port=${port:-8586}
+
+pub_dir=
+[[ -n "$PUBLIC_DIR" ]] && pub_dir=$(realpath $PUBLIC_DIR)
+pub_dir=${pub_dir:-$(realpath ~/Public)}
+
+self_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
+upk_data=$(dirname $self_dir)
+exec_path=${upk_data}/apps/filebrowser/filebrowser
 
 test_proc() { pidof "$@" &>/dev/null; }
 bgr() { nohup "$@" &>/dev/null & }
 
 start_serv() {
-   local exec="filebrowser -d $db_file -p $port -r $share_dir"
-   test_proc filebrowser || bgr ${exec}
+   test_proc filebrowser || bgr $exec_path -d $db_file -p $port -r $pub_dir
 }
 
 stop_serv() { pidof filebrowser | xargs kill &>/dev/null; }
@@ -32,10 +44,7 @@ case $1 in
    restart)
       stop; start
       ;;
-   --)
-      shift; filebrowser $@
-      ;;
    *)
-      printf "Usage: $(basename $0) <start|stop|restart|-- <fb_opts>>\n"
+      printf "Usage: $(basename $0) <start|stop|restart>\n"
 esac
 

@@ -39,13 +39,11 @@ fetch_release_ver_url() {
    local filename=${filename_tpl/$ver_placeholder/$ver}
    local url=$(cat $json_tmpfile | jq -r "$(jq_dl_url_filter $filename)")
    echo "${ver},${url}"
-   rm $json_tmpfile
+   rm -f $json_tmpfile
 }
 
-install_release_appimage() {
-   test_var cache_old $cache_old
-   test_var installed_dir $installed_dir
-   test_var exec_path $exec_path
+# return joined string "ver,url,save_path" if need downloading
+test_release_ver_url() {
    local repo="$1"
    local filename_tpl="$2"
    local local_ver=$(get_local_ver)
@@ -56,20 +54,47 @@ install_release_appimage() {
    IFS="," read -r remote_ver dl_url <<< "$ver_url"
    [[ -z "$(compare_dot_vers $remote_ver $local_ver)" ]] && exit 0
    local filename=${filename_tpl/$ver_placeholder/$remote_ver}
-   dl_file=${cache_dir}/${filename}
-   echo "==> downloading ${filename} ..."
-   if [[ -f "${dl_file}" ]]; then
+   local save_path=${cache_dir}/${filename}
+   echo "${remote_ver},${dl_url},${save_path}"
+}
+
+download_file() {
+   local dl_url="$1"
+   local save_path="$2"
+   echo "==> downloading $(basename $save_path) ..."
+   if [[ -f "${save_path}" ]]; then
       echo "==> found in cache"
    else
-      curl --create-dirs -o ${dl_file} -#L ${dl_url}
+      curl --create-dirs -o ${save_path} -#L ${dl_url}
+   fi
+}
+
+backup_old_installed() {
+   test_var cache_old $cache_old
+   test_var installed_dir $installed_dir
+   [[ -d $cache_old ]] && rm -rf $cache_old
+   [[ -d $installed_dir ]] && mv $installed_dir $cache_old
+}
+
+install_release_appimage() {
+   local repo="$1"
+   local filename_tpl="$2"
+   local path_url=$(test_release_ver_url "$repo" "$filename_tpl")
+   [[ -n "$path_url" ]] || exit 1
+   IFS="," read -r remote_ver dl_url save_path <<< "$path_url"
+   echo "==> downloading ${filename} ..."
+   if [[ -f "${save_path}" ]]; then
+      echo "==> found in cache"
+   else
+      curl --create-dirs -o ${save_path} -#L ${dl_url}
    fi
    # backup old installed
    [[ -d $cache_old ]] && rm -rf $cache_old
    [[ -d $installed_dir ]] && mv $installed_dir $cache_old
    # backup end
    mkdir -p $installed_dir
-   chmod u+x $dl_file
-   cp $dl_file $exec_path
+   chmod u+x $save_path
+   cp $save_path $exec_path
    echo "==> installed '$(tilde_path $installed_dir)'"
    write_ver "$remote_ver"
 }
@@ -104,12 +129,32 @@ compare_dot_vers() {
    echo $result
 }
 
+# return latest "commit_date,commit_sha"
 fetch_commit_date_sha() {
    local repo="$1"
    [[ -n "$repo" ]] || errf "==> undefined var: repo"
    local api_url="https://api.github.com/repos/${repo}/commits"
    test_cmd curl; test_cmd jq
    curl -sL $api_url | jq -r '.[0]|"\(.commit.author.date),\(.sha)"'
+}
+
+# return joined string "ver,url,save_path" if need downloading
+test_commit_date_sha() {
+   local repo="$1"
+   local local_ver=$(get_local_ver)
+   [[ "$local_ver" == "locked" ]] && exit 0
+   local date_sha=$(fetch_commit_date_sha "$repo")
+   local remote_ver=
+   local sha=
+   IFS="," read -r remote_ver sha <<< "$date_sha"
+   [[ -z "$(compare_date_vers $remote_ver $local_ver)" ]] && exit 0
+   local dl_url="https://github.com/${repo}/archive/${sha}.zip"
+   local repo_author=
+   local repo_name=
+   IFS="/" read -r repo_author repo_name <<< "$date_sha"
+   local filename=${repo_name}-${sha}.zip
+   save_path=${cache_dir}/${filename}
+   echo "${remote_ver},${dl_url},${save_path}"
 }
 
 compare_date_vers() {
@@ -136,7 +181,7 @@ remove_pkg() {
    fi
    local ver_file=${vers_dir}/${pkg_id}.txt
    if [[ -f $ver_file ]]; then
-      rm $ver_file
+      rm -f $ver_file
       echo "==> removed '$(tilde_path $ver_file)'"
    fi
 }
@@ -144,14 +189,17 @@ remove_pkg() {
 # copy desktop entries and icons
 enable_entry() {
    test_var metapkg_dir $metapkg_dir
-   mapfile -t entries < <(find $metapkg_dir -mindepth 1 -maxdepth 1 -type f \
+   local files=
+   mapfile -t files < <(find $metapkg_dir -mindepth 1 -maxdepth 1 -type f \
       -name "*.desktop")
-   for f in ${entries[@]}; do
+   for f in ${files[@]}; do
       cp -f $f ${entries_dir}/
       echo "==> installed '$(tilde_path ${entries_dir}/$(basename $f))'"
    done
    update-desktop-database ${entries_dir}
-   for f in ${metapkg_dir}/*.png; do
+   mapfile -t files < <(find $metapkg_dir -mindepth 1 -maxdepth 1 -type f \
+      -name "*.png")
+   for f in ${files[@]}; do
       cp -f $f ${icons_dir}/
       echo "==> installed '$(tilde_path ${icons_dir}/$(basename $f))'"
    done
@@ -160,16 +208,19 @@ enable_entry() {
 # remove desktop entries and icons
 disable_entry() {
    test_var metapkg_dir $metapkg_dir
-   mapfile -t entries < <(find $metapkg_dir -mindepth 1 -maxdepth 1 -type f \
+   local files=
+   mapfile -t files < <(find $metapkg_dir -mindepth 1 -maxdepth 1 -type f \
       -name "*.desktop")
-   for f in ${entries[@]}; do
+   for f in ${files[@]}; do
       ff=${entries_dir}/$(basename $f)
-      [[ -f $ff ]] && rm $ff && echo "==> removed '$(tilde_path $ff)'"
+      [[ -f $ff ]] && rm -f $ff && echo "==> removed '$(tilde_path $ff)'"
    done
    update-desktop-database ${entries_dir}
-   for f in ${metapkg_dir}/*.png; do
+   mapfile -t files < <(find $metapkg_dir -mindepth 1 -maxdepth 1 -type f \
+      -name "*.png")
+   for f in ${files[@]}; do
       ff=${icons_dir}/$(basename $f)
-      [[ -f $ff ]] && rm $ff && echo "==> removed '$(tilde_path $ff)'"
+      [[ -f $ff ]] && rm -f $ff && echo "==> removed '$(tilde_path $ff)'"
    done
 }
 

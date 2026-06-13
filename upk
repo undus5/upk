@@ -89,7 +89,7 @@ update_installed() {
    local pkg_ids=()
    local pkg_scripts=()
    local ver=
-   mapfile -t ver_files < <(ls -1 ${vers_dir}/)
+   mapfile -t ver_files < <(ls -1 ${vers_dir}/*.txt)
    [[ "${#ver_files[@]}" == "0" ]] && errf "==> no packages need update"
       for verf in "${ver_files[@]}"; do
          pkg_id=${verf%.*}
