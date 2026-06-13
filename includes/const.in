@@ -31,9 +31,9 @@ test_var() { [[ -n "$2" ]] || errf "undefined var: $1"; }
 tilde_path() { echo "$1" | sed "s#$(realpath ~)#~#"; }
 
 get_local_ver() {
-    [[ -n "$1" ]] && pkg_id="$1"
-    test_var pkg_id ${pkg_id}
-    local ver_file=${vers_dir}/${pkg_id}.txt
-    [[ -f "${ver_file}" ]] && cat ${ver_file}
+   [[ -n "$1" ]] && pkg_id="$1"
+   test_var pkg_id ${pkg_id}
+   local ver_file=${vers_dir}/${pkg_id}.txt
+   [[ -f "${ver_file}" ]] && cat ${ver_file}
 }
 

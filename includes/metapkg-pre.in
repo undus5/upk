@@ -17,179 +17,181 @@ post_enable() { return; }
 post_disable() { return; }
 
 jq_dl_url_filter() {
-    local filename="$1"
-    test_var filename $filename
-    local filter=".assets|map(select(.name==\"${filename}\")).[0]"
-    filter+=".browser_download_url"
-    echo $filter
+   local filename="$1"
+   test_var filename $filename
+   local filter=".assets|map(select(.name==\"${filename}\")).[0]"
+   filter+=".browser_download_url"
+   echo $filter
 }
 
 # get latest release info from github api
 # return joined string "ver,url"
 fetch_release_ver_url() {
-    local repo="$1"
-    local filename_tpl="$2"
-    [[ -n "$repo" ]] || errf "==> undefined var: repo"
-    [[ -n "$filename_tpl" ]] || errf "==> undefined var: filename_tpl"
-    local json_tmpfile=$(mktemp)
-    local api_url="https://api.github.com/repos/${repo}/releases/latest"
-    test_cmd curl; test_cmd jq
-    curl -sL $api_url > $json_tmpfile
-    local ver=$(cat $json_tmpfile | jq -r '.tag_name|ltrimstr("v")')
-    local filename=${filename_tpl/$ver_placeholder/$ver}
-    local url=$(cat $json_tmpfile | jq -r "$(jq_dl_url_filter $filename)")
-    echo "${ver},${url}"
-    rm $json_tmpfile
+   local repo="$1"
+   local filename_tpl="$2"
+   [[ -n "$repo" ]] || errf "==> undefined var: repo"
+   [[ -n "$filename_tpl" ]] || errf "==> undefined var: filename_tpl"
+   local json_tmpfile=$(mktemp)
+   local api_url="https://api.github.com/repos/${repo}/releases/latest"
+   test_cmd curl; test_cmd jq
+   curl -sL $api_url > $json_tmpfile
+   local ver=$(cat $json_tmpfile | jq -r '.tag_name|ltrimstr("v")')
+   local filename=${filename_tpl/$ver_placeholder/$ver}
+   local url=$(cat $json_tmpfile | jq -r "$(jq_dl_url_filter $filename)")
+   echo "${ver},${url}"
+   rm $json_tmpfile
 }
 
 install_release_appimage() {
-    test_var cache_old $cache_old
-    test_var installed_dir $installed_dir
-    test_var exec_path $exec_path
-    local repo="$1"
-    local filename_tpl="$2"
-    local local_ver=$(get_local_ver)
-    [[ "$local_ver" == "locked" ]] && exit 0
-    local ver_url=$(fetch_release_ver_url "$repo" "$filename_tpl")
-    local remote_ver=
-    local dl_url=
-    IFS="," read -r remote_ver dl_url <<< "$ver_url"
-    [[ -z "$(compare_dot_vers $remote_ver $local_ver)" ]] && exit 0
-    local filename=${filename_tpl/$ver_placeholder/$remote_ver}
-    dl_file=${cache_dir}/${filename}
-    echo "==> downloading ${filename} ..."
-    if [[ -f "${dl_file}" ]]; then
-        echo "==> found in cache"
-    else
-        curl --create-dirs -o ${dl_file} -#L ${dl_url}
-    fi
-    # backup old installed
-    [[ -d $cache_old ]] && rm -rf $cache_old
-    [[ -d $installed_dir ]] && mv $installed_dir $cache_old
-    # backup end
-    mkdir -p $installed_dir
-    chmod u+x $dl_file
-    cp $dl_file $exec_path
-    echo "==> installed '$(tilde_path $installed_dir)'"
-    write_ver "$remote_ver"
+   test_var cache_old $cache_old
+   test_var installed_dir $installed_dir
+   test_var exec_path $exec_path
+   local repo="$1"
+   local filename_tpl="$2"
+   local local_ver=$(get_local_ver)
+   [[ "$local_ver" == "locked" ]] && exit 0
+   local ver_url=$(fetch_release_ver_url "$repo" "$filename_tpl")
+   local remote_ver=
+   local dl_url=
+   IFS="," read -r remote_ver dl_url <<< "$ver_url"
+   [[ -z "$(compare_dot_vers $remote_ver $local_ver)" ]] && exit 0
+   local filename=${filename_tpl/$ver_placeholder/$remote_ver}
+   dl_file=${cache_dir}/${filename}
+   echo "==> downloading ${filename} ..."
+   if [[ -f "${dl_file}" ]]; then
+      echo "==> found in cache"
+   else
+      curl --create-dirs -o ${dl_file} -#L ${dl_url}
+   fi
+   # backup old installed
+   [[ -d $cache_old ]] && rm -rf $cache_old
+   [[ -d $installed_dir ]] && mv $installed_dir $cache_old
+   # backup end
+   mkdir -p $installed_dir
+   chmod u+x $dl_file
+   cp $dl_file $exec_path
+   echo "==> installed '$(tilde_path $installed_dir)'"
+   write_ver "$remote_ver"
 }
 
 # compare versions like a[.b.c.d...]
 # return remote_ver or blank, blank means no need to update
 compare_dot_vers() {
-    local remote_ver="$1"
-    local ver_pattern="^[0-9]+(.[0-9]+)*$"
-    [[ "$remote_ver" =~ $ver_pattern ]] || errf "==> invalid remote_ver"
-    local local_ver="$2"
-    local result=""
-    local rvers=
-    local lvers=
-    local rver=
-    local lver=
-    if [[ -z "$local_ver" ]]; then
-        result=$remote_ver
-    else
-        [[ "$local_ver" =~ $ver_pattern ]] || errf "==> invalid local_ver"
-        IFS="." read -r -a rvers <<< "$remote_ver"
-        IFS="." read -r -a lvers <<< "$local_ver"
-        for i in "${!rvers[@]}"; do
-            rver=${rvers[i]}
-            lver=${lvers[i]}
-            if (( rver > lver )); then
-                result=$remote_ver
-                break
-            fi
-        done
-    fi
-    echo $result
+   local remote_ver="$1"
+   local ver_pattern="^[0-9]+(.[0-9]+)*$"
+   [[ "$remote_ver" =~ $ver_pattern ]] || errf "==> invalid remote_ver"
+   local local_ver="$2"
+   local result=""
+   local rvers=
+   local lvers=
+   local rver=
+   local lver=
+   if [[ -z "$local_ver" ]]; then
+      result=$remote_ver
+   else
+      [[ "$local_ver" =~ $ver_pattern ]] || errf "==> invalid local_ver"
+      IFS="." read -r -a rvers <<< "$remote_ver"
+      IFS="." read -r -a lvers <<< "$local_ver"
+      for i in "${!rvers[@]}"; do
+         rver=${rvers[i]}
+         lver=${lvers[i]}
+         if (( rver > lver )); then
+            result=$remote_ver
+            break
+         fi
+      done
+   fi
+   echo $result
 }
 
 fetch_commit_date_sha() {
-    local repo="$1"
-    [[ -n "$repo" ]] || errf "==> undefined var: repo"
-    local api_url="https://api.github.com/repos/${repo}/commits"
-    test_cmd curl; test_cmd jq
-    curl -sL $api_url | jq -r '.[0]|"\(.commit.author.date),\(.sha)"'
+   local repo="$1"
+   [[ -n "$repo" ]] || errf "==> undefined var: repo"
+   local api_url="https://api.github.com/repos/${repo}/commits"
+   test_cmd curl; test_cmd jq
+   curl -sL $api_url | jq -r '.[0]|"\(.commit.author.date),\(.sha)"'
 }
 
 compare_date_vers() {
-    local remote_date="$1"
-    local local_date="$2"
-    [[ -n "$remote_ver" ]] || errf "undefined var: ${remote_date}"
-    local remote_ts=
-    local local_ts=
-    if [[ -z "$local_date" ]]; then
-        echo $remote_date
-    else
-        remote_ts=$(date -d ${remote_date} +%s)
-        local_ts=$(date -d ${local_date} +%s)
-        (( remote_ts > local_ts )) && echo $remote_date
-    fi
+   local remote_date="$1"
+   local local_date="$2"
+   [[ -n "$remote_ver" ]] || errf "undefined var: ${remote_date}"
+   local remote_ts=
+   local local_ts=
+   if [[ -z "$local_date" ]]; then
+      echo $remote_date
+   else
+      remote_ts=$(date -d ${remote_date} +%s)
+      local_ts=$(date -d ${local_date} +%s)
+      (( remote_ts > local_ts )) && echo $remote_date
+   fi
 }
 
 remove_pkg() {
-    test_var pkg_id $pkg_id
-    test_var installed_dir $installed_dir
-    if [[ -d $installed_dir ]]; then
-        rm -rf $installed_dir
-        echo "==> removed '$(tilde_path $installed_dir)'"
-    fi
-    local ver_file=${vers_dir}/${pkg_id}.txt
-    if [[ -f $ver_file ]]; then
-        rm $ver_file
-        echo "==> removed '$(tilde_path $ver_file)'"
-    fi
+   test_var pkg_id $pkg_id
+   test_var installed_dir $installed_dir
+   if [[ -d $installed_dir ]]; then
+      rm -rf $installed_dir
+      echo "==> removed '$(tilde_path $installed_dir)'"
+   fi
+   local ver_file=${vers_dir}/${pkg_id}.txt
+   if [[ -f $ver_file ]]; then
+      rm $ver_file
+      echo "==> removed '$(tilde_path $ver_file)'"
+   fi
 }
 
 # copy desktop entries and icons
 enable_entry() {
-    test_var metapkg_dir $metapkg_dir
-    shopt -s nullglob    # skip empty foreach
-    for f in ${metapkg_dir}/*.desktop; do
-        cp -f $f ${entries_dir}/
-        echo "==> installed '$(tilde_path ${entries_dir}/$(basename $f))'"
-    done
-    update-desktop-database ${entries_dir}
-    for f in ${metapkg_dir}/*.png; do
-        cp -f $f ${icons_dir}/
-        echo "==> installed '$(tilde_path ${icons_dir}/$(basename $f))'"
-    done
+   test_var metapkg_dir $metapkg_dir
+   mapfile -t entries < <(find $metapkg_dir -mindepth 1 -maxdepth 1 -type f \
+      -name "*.desktop")
+   for f in ${entries[@]}; do
+      cp -f $f ${entries_dir}/
+      echo "==> installed '$(tilde_path ${entries_dir}/$(basename $f))'"
+   done
+   update-desktop-database ${entries_dir}
+   for f in ${metapkg_dir}/*.png; do
+      cp -f $f ${icons_dir}/
+      echo "==> installed '$(tilde_path ${icons_dir}/$(basename $f))'"
+   done
 }
 
 # remove desktop entries and icons
 disable_entry() {
-    test_var metapkg_dir $metapkg_dir
-    shopt -s nullglob    # skip empty foreach
-    for f in ${metapkg_dir}/*.desktop; do
-        ff=${entries_dir}/$(basename $f)
-        [[ -f $ff ]] && rm $ff && echo "==> removed '$(tilde_path $ff)'"
-    done
-    update-desktop-database ${entries_dir}
-    for f in ${metapkg_dir}/*.png; do
-        ff=${icons_dir}/$(basename $f)
-        [[ -f $ff ]] && rm $ff && echo "==> removed '$(tilde_path $ff)'"
-    done
+   test_var metapkg_dir $metapkg_dir
+   mapfile -t entries < <(find $metapkg_dir -mindepth 1 -maxdepth 1 -type f \
+      -name "*.desktop")
+   for f in ${entries[@]}; do
+      ff=${entries_dir}/$(basename $f)
+      [[ -f $ff ]] && rm $ff && echo "==> removed '$(tilde_path $ff)'"
+   done
+   update-desktop-database ${entries_dir}
+   for f in ${metapkg_dir}/*.png; do
+      ff=${icons_dir}/$(basename $f)
+      [[ -f $ff ]] && rm $ff && echo "==> removed '$(tilde_path $ff)'"
+   done
 }
 
 write_ver() {
-    test_var pkg_id $pkg_id
-    local ver="$1"
-    local ver_file=${vers_dir}/${pkg_id}.txt
-    printf "$ver" > $ver_file
-    echo "==> wrote '$ver' to '$(tilde_path $ver_file)'"
+   test_var pkg_id $pkg_id
+   local ver="$1"
+   local ver_file=${vers_dir}/${pkg_id}.txt
+   printf "$ver" > $ver_file
+   echo "==> wrote '$ver' to '$(tilde_path $ver_file)'"
 }
 
 lock_ver() {
-    write_ver "locked" "$pkg_id"
+   write_ver "locked" "$pkg_id"
 }
 
 unlock_ver() {
-    write_ver "" "$pkg_id"
+   write_ver "" "$pkg_id"
 }
 
 launch_pkg() {
-    test_var exec_path $exec_path
-    [[ -x $exec_path ]] || errf "==> not executable : $exec_path"
-    $exec_path $@
+   test_var exec_path $exec_path
+   [[ -x $exec_path ]] || errf "==> not executable : $exec_path"
+   $exec_path "$@"
 }
 

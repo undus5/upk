@@ -11,9 +11,9 @@ installed_dir=${apps_dir}/${pkg_id}
 exec_path=${installed_dir}/${pkg_id}.AppImage
 
 install_pkg() {
-    local repo="jgraph/drawio-desktop"
-    local filename_tpl="drawio-x86_64-${ver_placeholder}.AppImage"
-    install_release_appimage "$repo" "$filename_tpl"
+   local repo="jgraph/drawio-desktop"
+   local filename_tpl="drawio-x86_64-${ver_placeholder}.AppImage"
+   install_release_appimage "$repo" "$filename_tpl"
 }
 
 source ${upk_src}/includes/metapkg-post.in

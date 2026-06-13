@@ -1,35 +1,35 @@
 #!/bin/bash
 
 case "${1}" in
-    install)
-        install_pkg
-        enable_entry
-        post_enable
-        ;;
-    update)
-        install_pkg
-        ;;
-    enable)
-        enable_entry
-        post_enable
-        ;;
-    disable)
-        disable_entry
-        post_disable
-        ;;
-    remove)
-        remove_pkg
-        disable_entry
-        post_disable
-        ;;
-    lock)
-        lock_ver
-        ;;
-    unlock)
-        unlock_ver
-        ;;
-    launch)
-        shift; launch_pkg $@
-        ;;
+   install)
+      install_pkg
+      enable_entry
+      post_enable
+      ;;
+   update)
+      install_pkg
+      ;;
+   enable)
+      enable_entry
+      post_enable
+      ;;
+   disable)
+      disable_entry
+      post_disable
+      ;;
+   remove)
+      remove_pkg
+      disable_entry
+      post_disable
+      ;;
+   lock)
+      lock_ver
+      ;;
+   unlock)
+      unlock_ver
+      ;;
+   launch)
+      shift; launch_pkg "$@"
+      ;;
 esac
 

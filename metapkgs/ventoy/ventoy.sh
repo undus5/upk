@@ -12,47 +12,47 @@ exec_path=${installed_dir}/VentoyGUI.x86_64
 exec_cli=ventoy-cli.sh
 
 install_pkg() {
-    test_var cache_old $cache_old
-    test_var installed_dir $installed_dir
-    local repo="ventoy/Ventoy"
-    local filename_tpl="ventoy-${ver_placeholder}-linux.tar.gz"
-    local local_ver=$(get_local_ver)
-    [[ "$local_ver" == "locked" ]] && exit 0
-    local ver_url=$(fetch_release_ver_url "$repo" "$filename_tpl")
-    local remote_ver=
-    local dl_url=
-    IFS="," read -r remote_ver dl_url <<< "$ver_url"
-    [[ -z "$(compare_dot_vers $remote_ver $local_ver)" ]] && exit 0
-    local filename=${filename_tpl/$ver_placeholder/$remote_ver}
-    dl_file=${cache_dir}/${filename}
-    echo "==> downloading ${filename} ..."
-    if [[ -f "${dl_file}" ]]; then
-        echo "==> found in cache"
-    else
-        curl --create-dirs -o ${dl_file} -#L ${dl_url}
-    fi
-    # backup old installed
-    [[ -d $cache_old ]] && rm -rf $cache_old
-    [[ -d $installed_dir ]] && mv $installed_dir $cache_old
-    # backup end
-    unpack_dir=${cache_dir}/${pkg_id}-${remote_ver}
-    tar xf ${dl_file} -C ${cache_dir}
-    mv ${unpack_dir} ${installed_dir}
-    echo "==> installed '$(tilde_path $installed_dir)'"
-    write_ver "$remote_ver"
+   test_var cache_old $cache_old
+   test_var installed_dir $installed_dir
+   local repo="ventoy/Ventoy"
+   local filename_tpl="ventoy-${ver_placeholder}-linux.tar.gz"
+   local local_ver=$(get_local_ver)
+   [[ "$local_ver" == "locked" ]] && exit 0
+   local ver_url=$(fetch_release_ver_url "$repo" "$filename_tpl")
+   local remote_ver=
+   local dl_url=
+   IFS="," read -r remote_ver dl_url <<< "$ver_url"
+   [[ -z "$(compare_dot_vers $remote_ver $local_ver)" ]] && exit 0
+   local filename=${filename_tpl/$ver_placeholder/$remote_ver}
+   dl_file=${cache_dir}/${filename}
+   echo "==> downloading ${filename} ..."
+   if [[ -f "${dl_file}" ]]; then
+      echo "==> found in cache"
+   else
+      curl --create-dirs -o ${dl_file} -#L ${dl_url}
+   fi
+   # backup old installed
+   [[ -d $cache_old ]] && rm -rf $cache_old
+   [[ -d $installed_dir ]] && mv $installed_dir $cache_old
+   # backup end
+   unpack_dir=${cache_dir}/${pkg_id}-${remote_ver}
+   tar xf ${dl_file} -C ${cache_dir}
+   mv ${unpack_dir} ${installed_dir}
+   echo "==> installed '$(tilde_path $installed_dir)'"
+   write_ver "$remote_ver"
 }
 
 post_enable() {
-    sed -i "s#VENTOY_DIR#${installed_dir}#" ${entries_dir}/${pkg_id}.desktop
-    cp -f ${metapkg_dir}/${exec_cli} ${bins_dir}
-    echo "==> installed '$(tilde_path ${bins_dir})/${exec_cli}'"
+   sed -i "s#VENTOY_DIR#${installed_dir}#" ${entries_dir}/${pkg_id}.desktop
+   cp -f ${metapkg_dir}/${exec_cli} ${bins_dir}
+   echo "==> installed '$(tilde_path ${bins_dir})/${exec_cli}'"
 }
 
 post_disable() {
-    if [[ -f "${bins_dir}/${exec_cli}" ]]; then
-        rm ${bins_dir}/${exec_cli}.sh
-        echo "==> removed '$(tilde_path ${bins_dir})/${exec_cli}'"
-    fi
+   if [[ -f "${bins_dir}/${exec_cli}" ]]; then
+      rm ${bins_dir}/${exec_cli}.sh
+      echo "==> removed '$(tilde_path ${bins_dir})/${exec_cli}'"
+   fi
 }
 
 source ${upk_src}/includes/metapkg-post.in

@@ -5,155 +5,155 @@ source ${self_dir}/includes/const.in
 [[ -f ${data_dir}/upk.in ]] && source ${data_dir}/upk.in
 
 get_help() {
-    printf "Usage: $(basename ${0}) <action> [app_id]\n"
-    printf "   list                             : list available packages\n"
-    printf "   install|remove <app_id[s]> [-y]  : -y skip confirmation\n"
-    printf "   update         [app_id[s]] [-y]  : empty app_id means update all\n"
-    printf "   enable|disable <app_id>          : enable/disable desktop entry\n"
-    printf "   lock           <app_id>          : prevent update and mark installed\n"
-    printf "   clean          [old]             : clean cache\n"
-    printf "   -h|--help\n"
+   printf "Usage: $(basename ${0}) <action> [app_id]\n"
+   printf "   list                             : list available packages\n"
+   printf "   install|remove <app_id[s]> [-y]  : -y skip confirmation\n"
+   printf "   update         [app_id[s]] [-y]  : empty app_id means update all\n"
+   printf "   enable|disable <app_id>          : enable/disable desktop entry\n"
+   printf "   lock           <app_id>          : prevent update and mark installed\n"
+   printf "   clean          [old]             : clean cache\n"
+   printf "   -h|--help\n"
 }
 
 get_metapkg_dir() {
-    local pkg_id="$1"
-    test_var pkg_id ${pkg_id}
-    local pkg_dir=
-    local test_dir=
-    if [[ -n "$UPK_METAPKG_DIR" && -d $UPK_METAPKG_DIR ]]; then
-        test_dir=${UPK_METAPKG_DIR}/${pkg_id}
-        [[ -d $test_dir ]] && pkg_dir=$test_dir
-    fi
-    if [[ ! -d $pkg_dir ]]; then
-        test_dir=${self_dir}/metapkgs/${pkg_id}
-        [[ -d $test_dir ]] && pkg_dir=$test_dir
-    fi
-    [[ -d $pkg_dir ]] && echo $pkg_dir || errf "==> metapkg not found: $pkg_id"
+   local pkg_id="$1"
+   test_var pkg_id ${pkg_id}
+   local pkg_dir=
+   local test_dir=
+   if [[ -n "$UPK_METAPKG_DIR" && -d $UPK_METAPKG_DIR ]]; then
+      test_dir=${UPK_METAPKG_DIR}/${pkg_id}
+      [[ -d $test_dir ]] && pkg_dir=$test_dir
+   fi
+   if [[ ! -d $pkg_dir ]]; then
+      test_dir=${self_dir}/metapkgs/${pkg_id}
+      [[ -d $test_dir ]] && pkg_dir=$test_dir
+   fi
+   [[ -d $pkg_dir ]] && echo $pkg_dir || errf "==> metapkg not found: $pkg_id"
 }
 
 list_metapkgs() {
-    local ids1=
-    local ids2=
-    local pkg_ids=
-    if [[ -n "$UPK_METAPKG_DIR" && -d $UPK_METAPKG_DIR ]]; then
-        mapfile -t ids1 < <(ls -1 ${UPK_METAPKG_DIR}/)
-    fi
-    mapfile -t ids2 < <(ls -1 ${self_dir}/metapkgs/)
-    mapfile -t pkg_ids < <(printf "%s\n" "${ids1[@]}" "${ids2[@]}" | sort -u)
-    local max_len=0
-    local curr_len=0
-    for pkg_id in "${pkg_ids[@]}"; do
-        curr_len=${#pkg_id}
-        (( curr_len > max_len )) && max_len=$curr_len
-    done
-    for pkg_id in "${pkg_ids[@]}"; do
-        printf "%-${max_len}s" "$pkg_id"
-        [[ -f "${vers_dir}/${pkg_id}.txt" ]] && printf "  [installed]"
-        printf "\n"
-    done
+   local ids1=
+   local ids2=
+   local pkg_ids=
+   if [[ -n "$UPK_METAPKG_DIR" && -d $UPK_METAPKG_DIR ]]; then
+      mapfile -t ids1 < <(ls -1 ${UPK_METAPKG_DIR}/)
+   fi
+   mapfile -t ids2 < <(ls -1 ${self_dir}/metapkgs/)
+   mapfile -t pkg_ids < <(printf "%s\n" "${ids1[@]}" "${ids2[@]}" | sort -u)
+   local max_len=0
+   local curr_len=0
+   for pkg_id in "${pkg_ids[@]}"; do
+      curr_len=${#pkg_id}
+         (( curr_len > max_len )) && max_len=$curr_len
+      done
+      for pkg_id in "${pkg_ids[@]}"; do
+         printf "%-${max_len}s" "$pkg_id"
+         [[ -f "${vers_dir}/${pkg_id}.txt" ]] && printf "  [installed]"
+         printf "\n"
+      done
 }
 
 clean_cache() {
-    test_var cache_dir $cache_dir
-    [[ -d "${cache_dir}" ]] || errf "directory not found: ${cache_dir}"
-    if [[ "$1" == old ]]; then
-        rm -rf ${cache_dir}/*.old
-        echo "==> cleaned $(tilde_path $cache_dir)/*.old"
-    else
-        rm -rf ${cache_dir}/*
-        echo "==> cleaned $(tilde_path $cache_dir)/"
-    fi
+   test_var cache_dir $cache_dir
+   [[ -d "${cache_dir}" ]] || errf "directory not found: ${cache_dir}"
+   if [[ "$1" == old ]]; then
+      rm -rf ${cache_dir}/*.old
+      echo "==> cleaned $(tilde_path $cache_dir)/*.old"
+   else
+      rm -rf ${cache_dir}/*
+      echo "==> cleaned $(tilde_path $cache_dir)/"
+   fi
 }
 
 get_confirmation() {
-    local sub_cmd="$1"
-    local skip_flag="$2"
-    shift && shift
-    local pkg_ids=("$@")
-    local confirmation=
-    if [[ "$skip_flag" != "-y" ]]; then
-        printf "Selected packages:\n"
-        for id in "${pkg_ids[@]}"; do
-            printf " $id"
-        done
-        printf "\n"
-        read -r -p "${sub_cmd^} packages? [y/N]: " confirmation
-    else
-        confirmation=y
-    fi
-    [[ "${confirmation}" =~ ^[yY]$ ]] || exit 1
+   local sub_cmd="$1"
+   local skip_flag="$2"
+   shift && shift
+   local pkg_ids=("$@")
+   local confirmation=
+   if [[ "$skip_flag" != "-y" ]]; then
+      printf "Selected packages:\n"
+      for id in "${pkg_ids[@]}"; do
+         printf " $id"
+      done
+      printf "\n"
+      read -r -p "${sub_cmd^} packages? [y/N]: " confirmation
+   else
+      confirmation=y
+   fi
+   [[ "${confirmation}" =~ ^[yY]$ ]] || exit 1
 }
 
 update_installed() {
-    local skip_confirm="$1"
-    local pkg_ids=()
-    local pkg_scripts=()
-    local ver=
-    mapfile -t ver_files < <(ls -1 ${vers_dir}/)
-    [[ "${#ver_files[@]}" == "0" ]] && errf "==> no packages need update"
-    for verf in "${ver_files[@]}"; do
-        pkg_id=${verf%.*}
-        pkg_scripts+=($(get_metapkg_dir "$pkg_id"))
-        ver=$(get_local_ver "$pkg_id")
-        [[ "$ver" != "locked" ]] && pkg_ids+=("$pkg_id")
-    done
-    [[ "${#pkg_ids[@]}" == "0" ]] && errf "==> no packages need update"
-    get_confirmation "update" "$skip_confirm" "${pkg_ids[@]}"
-    for pkg_script in "${pkg_scripts[@]}"; do
-        ${pkg_script} $sub_cmd
-    done
+   local skip_confirm="$1"
+   local pkg_ids=()
+   local pkg_scripts=()
+   local ver=
+   mapfile -t ver_files < <(ls -1 ${vers_dir}/)
+   [[ "${#ver_files[@]}" == "0" ]] && errf "==> no packages need update"
+      for verf in "${ver_files[@]}"; do
+         pkg_id=${verf%.*}
+         pkg_scripts+=($(get_metapkg_dir "$pkg_id"))
+         ver=$(get_local_ver "$pkg_id")
+         [[ "$ver" != "locked" ]] && pkg_ids+=("$pkg_id")
+      done
+      [[ "${#pkg_ids[@]}" == "0" ]] && errf "==> no packages need update"
+         get_confirmation "update" "$skip_confirm" "${pkg_ids[@]}"
+         for pkg_script in "${pkg_scripts[@]}"; do
+            ${pkg_script} $sub_cmd
+         done
 }
 
-case "${1}" in
-    install|update|remove)
-        sub_cmd="$1"; shift
-        skip_confirm=
-        if [[ "$sub_cmd" == "update" ]]; then
+case "$1" in
+   install|update|remove)
+      sub_cmd="$1"; shift
+      skip_confirm=
+      if [[ "$sub_cmd" == "update" ]]; then
+         if [[ -z "$@" ]]; then
+            update_installed; exit 0
+         elif [[ "$1" == "-y" ]]; then
+            skip_confirm="-y"
+            shift
             if [[ -z "$@" ]]; then
-                update_installed; exit 0
-            elif [[ "$1" == "-y" ]]; then
-                skip_confirm="-y"
-                shift
-                if [[ -z "$@" ]]; then
-                    update_installed -y; exit 0
-                fi
+               update_installed -y; exit 0
             fi
-        fi
-        pkg_ids=()
-        pkg_scripts=()
-        for arg in "$@"; do
-            arg=${arg%/}
-            if [[ "$arg" == "-y" ]]; then
-                skip_confirm="-y"
-            else
-                pkg_scripts+=("$(get_metapkg_dir "$arg")/${arg}.sh")
-                pkg_ids+=("$arg")
-            fi
-        done
-        get_confirmation "$sub_cmd" "$skip_confirm" "${pkg_ids[@]}"
-        for pkg_script in "${pkg_scripts[@]}"; do
-            ${pkg_script} $sub_cmd
-        done
-        ;;
-    enable|disable|lock|unlock|launch)
-        sub_cmd="$1"
-        pkg_id=${2%/}
-        metapkg_dir=$(get_metapkg_dir $pkg_id)
-        shift && shift
-        ${metapkg_dir}/${pkg_id}.sh $sub_cmd $@
-        ;;
-    list)
-        list_metapkgs
-        ;;
-    clean)
-        shift
-        clean_cache $@
-        ;;
-    ""|-h|--help)
-        get_help
-        ;;
-    *)
-        get_help; exit 1
-        ;;
+         fi
+      fi
+      pkg_ids=()
+      pkg_scripts=()
+      for arg in "$@"; do
+         arg=${arg%/}
+         if [[ "$arg" == "-y" ]]; then
+            skip_confirm="-y"
+         else
+            pkg_scripts+=("$(get_metapkg_dir "$arg")/${arg}.sh")
+            pkg_ids+=("$arg")
+         fi
+      done
+      get_confirmation "$sub_cmd" "$skip_confirm" "${pkg_ids[@]}"
+      for pkg_script in "${pkg_scripts[@]}"; do
+         ${pkg_script} $sub_cmd
+      done
+      ;;
+   enable|disable|lock|unlock|launch)
+      sub_cmd="$1"
+      pkg_id=${2%/}
+      metapkg_dir=$(get_metapkg_dir $pkg_id)
+      shift && shift
+      ${metapkg_dir}/${pkg_id}.sh $sub_cmd "$@"
+      ;;
+   list)
+      list_metapkgs
+      ;;
+   clean)
+      shift
+      clean_cache $@
+      ;;
+   ""|-h|--help)
+      get_help
+      ;;
+   *)
+      get_help; exit 1
+      ;;
 esac
 
