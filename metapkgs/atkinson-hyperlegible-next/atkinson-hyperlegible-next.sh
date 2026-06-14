@@ -16,6 +16,8 @@ self_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
 
 install_pkg() {
    test_cmd unzip
+   local local_ver=$(get_local_ver)
+   [[ "$local_ver" == "locked" ]] && exit 0
    unzip -q ${self_dir}/${pkg_id}.zip -d $cache_dir
    # backup old installed
    [[ -d $cache_old ]] && rm -rf $cache_old

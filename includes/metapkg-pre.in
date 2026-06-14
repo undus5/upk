@@ -228,7 +228,7 @@ write_ver() {
    test_var pkg_id $pkg_id
    local ver="$1"
    local ver_file=${vers_dir}/${pkg_id}.txt
-   printf "$ver" > $ver_file
+   echo "$ver" > $ver_file
    echo "==> wrote '$ver' to '$(tilde_path $ver_file)'"
 }
 

@@ -66,7 +66,7 @@ clean_cache() {
 }
 
 get_confirmation() {
-   local sub_cmd="$1"
+   local prompt="$1"
    local skip_flag="$2"
    shift && shift
    local pkg_ids=("$@")
@@ -77,7 +77,7 @@ get_confirmation() {
          printf " $id"
       done
       printf "\n"
-      read -r -p "${sub_cmd^} packages? [y/N]: " confirmation
+      read -r -p "${prompt^}" confirmation
    else
       confirmation=y
    fi
@@ -89,16 +89,20 @@ update_installed() {
    local pkg_ids=()
    local pkg_scripts=()
    local ver=
-   mapfile -t ver_files < <(ls -1 ${vers_dir}/*.txt)
-   [[ "${#ver_files[@]}" == "0" ]] && errf "==> no packages need update"
-      for verf in "${ver_files[@]}"; do
-         pkg_id=${verf%.*}
-         pkg_scripts+=($(get_metapkg_dir "$pkg_id"))
+   local txts=
+   mapfile -t txts < <(ls -1 ${vers_dir}/*.txt)
+   [[ "${#txts[@]}" == "0" ]] && errf "==> no packages need update"
+      local tname=
+      for t in "${txts[@]}"; do
+         tname=$(basename $t)
+         pkg_id=${tname%.*}
+         pkg_scripts+=("$(get_metapkg_dir "$pkg_id")/${pkg_id}.sh")
          ver=$(get_local_ver "$pkg_id")
          [[ "$ver" != "locked" ]] && pkg_ids+=("$pkg_id")
       done
       [[ "${#pkg_ids[@]}" == "0" ]] && errf "==> no packages need update"
-         get_confirmation "update" "$skip_confirm" "${pkg_ids[@]}"
+         local prompt="Check updates and install packages? [y/N]: "
+         get_confirmation "$prompt" "$skip_confirm" "${pkg_ids[@]}"
          for pkg_script in "${pkg_scripts[@]}"; do
             ${pkg_script} $sub_cmd
          done
@@ -130,7 +134,8 @@ case "$1" in
             pkg_ids+=("$arg")
          fi
       done
-      get_confirmation "$sub_cmd" "$skip_confirm" "${pkg_ids[@]}"
+      prompt="$sub_cmd packages? [y/N]: "
+      get_confirmation "$prompt" "$skip_confirm" "${pkg_ids[@]}"
       for pkg_script in "${pkg_scripts[@]}"; do
          ${pkg_script} $sub_cmd
       done

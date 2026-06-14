@@ -12,6 +12,8 @@ exec_path=${installed_dir}/bin/studio
 
 install_pkg() {
    test_var pkg_id $pkg_id
+   local local_ver=$(get_local_ver)
+   [[ "$local_ver" == "locked" ]] && exit 0
    printf "==> ${pkg_id} not support auto installation  \n"
    printf "==> 1. download from: https://developer.android.com/studio\n"
    printf "==> 2. put into '$(tilde_path $installed_dir)'\n"
