@@ -101,7 +101,7 @@ update_installed() {
          [[ "$ver" != "locked" ]] && pkg_ids+=("$pkg_id")
       done
       [[ "${#pkg_ids[@]}" == "0" ]] && errf "==> no packages need update"
-         local prompt="Check updates and install packages? [y/N]: "
+         local prompt="Check and update packages? [y/N]: "
          get_confirmation "$prompt" "$skip_confirm" "${pkg_ids[@]}"
          for pkg_script in "${pkg_scripts[@]}"; do
             ${pkg_script} $sub_cmd

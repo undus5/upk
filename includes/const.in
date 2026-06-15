@@ -24,7 +24,8 @@ entries_dir=~/.local/share/applications
 [[ -d $entries_dir ]] || mkdir -p $entries_dir
 
 # helper functions
-errf() { printf "${@}\n" >&2; exit 1; }
+errf() { printf "$@\n" >&2; exit 1; }
+rtnf() { printf "$@\n"; exit 0; }
 test_cmd() { command -v $1 &>/dev/null || errf "command not found: $@"; }
 test_var() { [[ -n "$2" ]] || errf "undefined var: $1"; }
 # replace '/home/*' with '~' in path for display

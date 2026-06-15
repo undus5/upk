@@ -17,12 +17,12 @@ install_pkg() {
    local filename="ntws-latest-standalone-linux-x64.sh"
    local dl_url="https://download2.interactivebrokers.com/installers/ntws"
    dl_url+="/latest-standalone/${filename}"
-   dl_file=${cache_dir}/${filename}
+   save_path=${cache_dir}/${filename}
    echo "==> downloading ${filename} ..."
-   if [[ -f "${dl_file}" ]]; then
+   if [[ -f "${save_path}" ]]; then
       echo "==> found in cache"
    else
-      curl --create-dirs -o ${dl_file} -#L ${dl_url}
+      curl --create-dirs -o ${save_path} -#L ${dl_url}
    fi
    # backup old installed
    [[ -d $cache_old ]] && rm -rf $cache_old
@@ -30,8 +30,8 @@ install_pkg() {
    # backup end
    unpack_dir=${cache_dir}/${pkg_id}
    mkdir -p $unpack_dir
-   chmod u+x $dl_file
-   cp $dl_file ${unpack_dir}/
+   chmod u+x $save_path
+   cp $save_path ${unpack_dir}/
    ${metapkg_dir}/bubblewrap.sh $unpack_dir ~/${filename}
    rm -f ${unpack_dir}/${filename}
    mv ${unpack_dir} ${installed_dir}

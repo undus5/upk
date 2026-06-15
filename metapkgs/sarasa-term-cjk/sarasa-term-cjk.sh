@@ -13,8 +13,9 @@ install_pkg() {
    local repo="be5invis/Sarasa-Gothic"
    local filename_tpl="SarasaTerm-TTF-${ver_placeholder}.7z"
 
+   printf "==> checking update for $pkg_id ... "
    local path_url=$(test_release_ver_url "$repo" "$filename_tpl")
-   [[ -n "$path_url" ]] || exit 1
+   [[ -n "$path_url" ]] && printf "\n" || rtnf "up to date"
    IFS="," read -r remote_ver dl_url save_path <<< "$path_url"
    download_file $dl_url $save_path
    backup_old_installed
@@ -22,7 +23,7 @@ install_pkg() {
    echo "==> unpacking ${filename} ..."
    unpack_dir=${cache_dir}/${pkg_id}
    mkdir -p ${unpack_dir}
-   7z x ${dl_file} -o${unpack_dir} >/dev/null
+   7z x ${save_path} -o${unpack_dir} >/dev/null
    rm -f ${unpack_dir}/SarasaTermCL*.ttf
    rm -f ${unpack_dir}/SarasaTermHC*.ttf
    mv ${unpack_dir} ${installed_dir}

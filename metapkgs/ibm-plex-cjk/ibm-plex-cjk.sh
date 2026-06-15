@@ -26,32 +26,32 @@ install_pkg() {
    local kr_url="${base_url}/%40ibm%2Fplex-sans-kr%401.1.0/${kr_name}.zip"
    test_cmd curl; test_cmd unzip
    echo "==> downloading ${sc_name}.zip ..."
-   sc_dl_file=${cache_dir}/${sc_name}.zip
-   if [[ -f "${sc_dl_file}" ]]; then
+   sc_save_path=${cache_dir}/${sc_name}.zip
+   if [[ -f "${sc_save_path}" ]]; then
       echo "==> found in cache"
    else
-      curl --create-dirs -o ${sc_dl_file} -#L ${sc_url}
+      curl --create-dirs -o ${sc_save_path} -#L ${sc_url}
    fi
    echo "==> downloading ${tc_name}.zip ..."
-   tc_dl_file=${cache_dir}/${tc_name}.zip
-   if [[ -f "${tc_dl_file}" ]]; then
+   tc_save_path=${cache_dir}/${tc_name}.zip
+   if [[ -f "${tc_save_path}" ]]; then
       echo "==> found in cache"
    else
-      curl --create-dirs -o ${tc_dl_file} -#L ${tc_url}
+      curl --create-dirs -o ${tc_save_path} -#L ${tc_url}
    fi
    echo "==> downloading ${jp_name}.zip ..."
-   jp_dl_file=${cache_dir}/${jp_name}.zip
-   if [[ -f "${jp_dl_file}" ]]; then
+   jp_save_path=${cache_dir}/${jp_name}.zip
+   if [[ -f "${jp_save_path}" ]]; then
       echo "==> found in cache"
    else
-      curl --create-dirs -o ${jp_dl_file} -#L ${jp_url}
+      curl --create-dirs -o ${jp_save_path} -#L ${jp_url}
    fi
    echo "==> downloading ${kr_name}.zip ..."
-   kr_dl_file=${cache_dir}/${kr_name}.zip
-   if [[ -f "${kr_dl_file}" ]]; then
+   kr_save_path=${cache_dir}/${kr_name}.zip
+   if [[ -f "${kr_save_path}" ]]; then
       echo "==> found in cache"
    else
-      curl --create-dirs -o ${kr_dl_file} -#L ${kr_url}
+      curl --create-dirs -o ${kr_save_path} -#L ${kr_url}
    fi
    # backup old installed
    [[ -d $cache_old ]] && rm -rf $cache_old
@@ -60,13 +60,13 @@ install_pkg() {
    unpack_dir=${cache_dir}/${pkg_id}
    mkdir -p ${unpack_dir}
    echo "==> unpacking ${sc_name}.zip ..."
-   unzip -q ${sc_dl_file} -d ${unpack_dir}
+   unzip -q ${sc_save_path} -d ${unpack_dir}
    echo "==> unpacking ${tc_name}.zip ..."
-   unzip -q ${tc_dl_file} -d ${unpack_dir}
+   unzip -q ${tc_save_path} -d ${unpack_dir}
    echo "==> unpacking ${jp_name}.zip ..."
-   unzip -q ${jp_dl_file} -d ${unpack_dir}
+   unzip -q ${jp_save_path} -d ${unpack_dir}
    echo "==> unpacking ${kr_name}.zip ..."
-   unzip -q ${kr_dl_file} -d ${unpack_dir}
+   unzip -q ${kr_save_path} -d ${unpack_dir}
    mkdir -p ${installed_dir}
    rel_path="fonts/complete/otf"
    mv ${unpack_dir}/${sc_name}/${rel_path}/hinted ${installed_dir}/${sc_name}

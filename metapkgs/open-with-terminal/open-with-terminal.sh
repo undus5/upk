@@ -23,6 +23,10 @@ xdg_exec=${bins_dir}/xdg-terminal-exec
 install_pkg() {
    test_var installed_dir $installed_dir
    test_var exec_name $exec_name
+
+   local local_ver=$(get_local_ver)
+   [[ "$local_ver" == "locked" ]] && exit 0
+
    mkdir -p $installed_dir
    self_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
    cp -f ${self_dir}/${exec_name} ${installed_dir}/

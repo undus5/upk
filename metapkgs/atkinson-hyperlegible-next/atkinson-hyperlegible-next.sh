@@ -16,13 +16,13 @@ self_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
 
 install_pkg() {
    test_cmd unzip
+
    local local_ver=$(get_local_ver)
    [[ "$local_ver" == "locked" ]] && exit 0
+
    unzip -q ${self_dir}/${pkg_id}.zip -d $cache_dir
-   # backup old installed
-   [[ -d $cache_old ]] && rm -rf $cache_old
-   [[ -d $installed_dir ]] && mv $installed_dir $cache_old
-   # backup end
+   backup_old_installed
+
    mv ${cache_dir}/${pkg_id} $installed_dir
    echo "==> installed '$(tilde_path $installed_dir)'"
    lock_ver

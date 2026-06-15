@@ -84,25 +84,24 @@ install_pkg() {
    test_var exec_path $exec_path
    local local_ver=$(get_local_ver)
    [[ "$local_ver" == "locked" ]] && exit 0
+
+   printf "==> checking update for $pkg_id ... "
    local remote_ver=$(fetch_release_ver)
+   remote_ver=$(compare_vers $remote_ver $local_ver)
+   [[ -n "$remote_ver" ]] && printf "\n" || rtnf "up to date"
+
    local filename="ungoogled-chromium-${remote_ver}-x86_64.AppImage"
    local dl_url="https://github.com"
    dl_url+="/ungoogled-software/ungoogled-chromium-portablelinux"
    dl_url+="/releases/download/${remote_ver}/${filename}"
-   dl_file=${cache_dir}/${filename}
-   echo "==> downloading ${filename} ..."
-   if [[ -f "${dl_file}" ]]; then
-      echo "==> found in cache"
-   else
-      curl --create-dirs -o ${dl_file} -#L ${dl_url}
-   fi
-   # backup old installed
-   [[ -d $cache_old ]] && rm -rf $cache_old
-   [[ -d $installed_dir ]] && mv $installed_dir $cache_old
-   # backup end
+   save_path=${cache_dir}/${filename}
+
+   download_file "$dl_url" "$save_path"
+   backup_old_installed
+
    mkdir -p $installed_dir
-   chmod u+x $dl_file
-   cp $dl_file $exec_path
+   chmod u+x $save_path
+   cp $save_path $exec_path
    echo "==> installed '$(tilde_path $installed_dir)'"
    write_ver "$remote_ver"
 }

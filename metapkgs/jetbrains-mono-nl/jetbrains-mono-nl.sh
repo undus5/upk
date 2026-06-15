@@ -13,16 +13,17 @@ install_pkg() {
    local repo="JetBrains/JetBrainsMono"
    local filename_tpl="JetBrainsMono-${ver_placeholder}.zip"
 
+   printf "==> checking update for $pkg_id ... "
    local path_url=$(test_release_ver_url "$repo" "$filename_tpl")
-   [[ -n "$path_url" ]] || exit 1
+   [[ -n "$path_url" ]] && printf "\n" || rtnf "up to date"
    IFS="," read -r remote_ver dl_url save_path <<< "$path_url"
    download_file $dl_url $save_path
    backup_old_installed
 
-   unpack_dir=${dl_file%.*}
+   unpack_dir=${save_path%.*}
    mkdir -p $unpack_dir
    echo "==> unpacking ${filename} ..."
-   unzip -q $dl_file -d $unpack_dir
+   unzip -q $save_path -d $unpack_dir
    mkdir -p $installed_dir
    mv ${unpack_dir}/fonts/ttf/JetBrainsMonoNL*.ttf ${installed_dir}/
    rm -rf $unpack_dir

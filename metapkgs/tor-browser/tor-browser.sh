@@ -26,19 +26,19 @@ install_pkg() {
    local filename="tor-browser-linux-x86_64-${remote_ver}.tar.xz"
    local dl_url="https://www.torproject.org/dist/torbrowser"
    dl_url+="/${remote_ver}/${filename}"
-   dl_file=${cache_dir}/${filename}
+   save_path=${cache_dir}/${filename}
    echo "==> downloading ${filename} ..."
-   if [[ -f "${dl_file}" ]]; then
+   if [[ -f "${save_path}" ]]; then
       echo "==> found in cache"
    else
-      curl --create-dirs -o ${dl_file} -#L ${dl_url}
+      curl --create-dirs -o ${save_path} -#L ${dl_url}
    fi
    # backup old installed
    [[ -d $cache_old ]] && rm -rf $cache_old
    [[ -d $installed_dir ]] && mv $installed_dir $cache_old
    # backup end
    unpack_dir=${cache_dir}/${pkg_id}
-   tar xf ${dl_file} -C ${cache_dir}
+   tar xf ${save_path} -C ${cache_dir}
    mv ${unpack_dir} ${installed_dir}
    echo "==> installed '$(tilde_path $installed_dir)'"
    lock_ver
