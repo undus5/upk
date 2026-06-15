@@ -14,20 +14,15 @@ install_pkg() {
    test_var installed_dir $installed_dir
    local local_ver=$(get_local_ver)
    [[ "$local_ver" == "locked" ]] && exit 0
+
    local filename="ntws-latest-standalone-linux-x64.sh"
    local dl_url="https://download2.interactivebrokers.com/installers/ntws"
    dl_url+="/latest-standalone/${filename}"
    save_path=${cache_dir}/${filename}
-   echo "==> downloading ${filename} ..."
-   if [[ -f "${save_path}" ]]; then
-      echo "==> found in cache"
-   else
-      curl --create-dirs -o ${save_path} -#L ${dl_url}
-   fi
-   # backup old installed
-   [[ -d $cache_old ]] && rm -rf $cache_old
-   [[ -d $installed_dir ]] && mv $installed_dir $cache_old
-   # backup end
+
+   download_file "$dl_url" "$save_path"
+   backup_old_installed
+
    unpack_dir=${cache_dir}/${pkg_id}
    mkdir -p $unpack_dir
    chmod u+x $save_path

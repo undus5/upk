@@ -2,7 +2,10 @@
 
 self_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
 source ${self_dir}/includes/const.in
+# import $UPK_METAPKG_DIR
 [[ -f ${data_dir}/upk.in ]] && source ${data_dir}/upk.in
+
+(( EUID != 0 )) || errf "==> abort for superuser"
 
 get_help() {
    printf "Usage: $(basename ${0}) <action> [app_id]\n"

@@ -28,5 +28,11 @@ install_pkg() {
    lock_ver
 }
 
+post_enable() {
+   echo "==> run 'upk launch telegram' to start app for the first time"
+   echo "==> it will create desktop entry automatically"
+   echo "==> next time you could start from desktop entry"
+}
+
 source ${upk_src}/includes/metapkg-post.in
 
