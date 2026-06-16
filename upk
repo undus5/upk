@@ -12,7 +12,7 @@ get_help() {
    printf "   list                             : list available packages\n"
    printf "   install|remove <app_id[s]> [-y]  : -y skip confirmation\n"
    printf "   update         [app_id[s]] [-y]  : empty app_id means update all\n"
-   printf "   enable|disable <app_id>          : enable/disable desktop entry\n"
+   printf "   enable|disable <app_id>          : enable/disable desktop entry and icon\n"
    printf "   lock           <app_id>          : prevent update and mark installed\n"
    printf "   clean          [old]             : clean cache\n"
    printf "   -h|--help\n"

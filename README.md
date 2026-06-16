@@ -1,6 +1,6 @@
 # upk
 
-Linux user-end package manager
+Userland package manager for Linux, distro irrelevant.
 
 Features:
 
@@ -14,7 +14,7 @@ Usage: upk <action> [app_id]
    list                             : list available packages
    install|remove <app_id[s]> [-y]  : -y skip confirmation
    update         [app_id[s]] [-y]  : empty app_id means update all
-   enable|disable <app_id>          : enable/disable desktop entry
+   enable|disable <app_id>          : enable/disable desktop entry and icon
    lock           <app_id>          : prevent update and mark installed
    clean          [old]             : clean cache
    -h|--help
