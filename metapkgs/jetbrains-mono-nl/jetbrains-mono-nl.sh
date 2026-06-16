@@ -13,7 +13,7 @@ install_pkg() {
    local repo="JetBrains/JetBrainsMono"
    local filename_tpl="JetBrainsMono-${ver_placeholder}.zip"
 
-   printf "==> checking update for $pkg_id ... "
+   printf "==> checking update for '$pkg_id' ... "
    local path_url=$(test_release_ver_url "$repo" "$filename_tpl")
    [[ -n "$path_url" ]] && printf "\n" || rtnf "up to date"
    IFS="," read -r remote_ver dl_url save_path <<< "$path_url"

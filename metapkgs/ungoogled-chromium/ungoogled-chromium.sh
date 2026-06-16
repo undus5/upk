@@ -85,7 +85,7 @@ install_pkg() {
    local local_ver=$(get_local_ver)
    [[ "$local_ver" == "locked" ]] && exit 0
 
-   printf "==> checking update for $pkg_id ... "
+   printf "==> checking update for '$pkg_id' ... "
    local remote_ver=$(fetch_release_ver)
    remote_ver=$(compare_vers $remote_ver $local_ver)
    [[ -n "$remote_ver" ]] && printf "\n" || rtnf "up to date"

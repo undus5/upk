@@ -33,7 +33,7 @@ install_pkg() {
    test_cmd curl; test_cmd jq
    local dl_url=$(curl -sL $api_url | jq -r "$(jq_dl_url_filter $filename)")
    local save_path=${cache_dir}/${filename}
-   echo "==> downloading ${filename} ..."
+   echo "==> downloading '${filename}' ..."
    if [[ -f "${save_path}" ]]; then
       echo "==> found in cache"
    else

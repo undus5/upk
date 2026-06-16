@@ -27,7 +27,7 @@ install_pkg() {
    local dl_url="https://www.torproject.org/dist/torbrowser"
    dl_url+="/${remote_ver}/${filename}"
    save_path=${cache_dir}/${filename}
-   echo "==> downloading ${filename} ..."
+   echo "==> downloading '${filename}' ..."
    if [[ -f "${save_path}" ]]; then
       echo "==> found in cache"
    else

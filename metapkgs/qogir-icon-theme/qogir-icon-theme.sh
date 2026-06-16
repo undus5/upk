@@ -16,7 +16,7 @@ installed_dir_3=${icons_dir}/Qogir-Light
 install_pkg() {
    local repo="vinceliuice/Qogir-icon-theme"
 
-   printf "==> checking update for $pkg_id ... "
+   printf "==> checking update for '$pkg_id' ... "
    local path_url=$(test_commit_date_sha "$repo")
    [[ -n "$path_url" ]] && printf "\n" || rtnf "up to date"
    IFS="," read -r remote_ver dl_url save_path <<< "$path_url"

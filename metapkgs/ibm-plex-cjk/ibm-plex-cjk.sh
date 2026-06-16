@@ -25,28 +25,28 @@ install_pkg() {
    local jp_url="${base_url}/%40ibm%2Fplex-sans-jp%403.0.0/${jp_name}.zip"
    local kr_url="${base_url}/%40ibm%2Fplex-sans-kr%401.1.0/${kr_name}.zip"
    test_cmd curl; test_cmd unzip
-   echo "==> downloading ${sc_name}.zip ..."
+   echo "==> downloading '${sc_name}.zip' ..."
    sc_save_path=${cache_dir}/${sc_name}.zip
    if [[ -f "${sc_save_path}" ]]; then
       echo "==> found in cache"
    else
       curl --create-dirs -o ${sc_save_path} -#L ${sc_url}
    fi
-   echo "==> downloading ${tc_name}.zip ..."
+   echo "==> downloading '${tc_name}.zip' ..."
    tc_save_path=${cache_dir}/${tc_name}.zip
    if [[ -f "${tc_save_path}" ]]; then
       echo "==> found in cache"
    else
       curl --create-dirs -o ${tc_save_path} -#L ${tc_url}
    fi
-   echo "==> downloading ${jp_name}.zip ..."
+   echo "==> downloading '${jp_name}.zip' ..."
    jp_save_path=${cache_dir}/${jp_name}.zip
    if [[ -f "${jp_save_path}" ]]; then
       echo "==> found in cache"
    else
       curl --create-dirs -o ${jp_save_path} -#L ${jp_url}
    fi
-   echo "==> downloading ${kr_name}.zip ..."
+   echo "==> downloading '${kr_name}.zip' ..."
    kr_save_path=${cache_dir}/${kr_name}.zip
    if [[ -f "${kr_save_path}" ]]; then
       echo "==> found in cache"

@@ -61,7 +61,7 @@ test_release_ver_url() {
 download_file() {
    local dl_url="$1"
    local save_path="$2"
-   echo "==> downloading $(basename $save_path) ..."
+   echo "==> downloading '$(basename $save_path)' ..."
    if [[ -f "${save_path}" ]]; then
       echo "==> found in cache"
    else
@@ -81,7 +81,7 @@ install_release_appimage() {
    local repo="$1"
    local filename_tpl="$2"
 
-   printf "==> checking update for $pkg_id ... "
+   printf "==> checking update for '$pkg_id' ... "
    local path_url=$(test_release_ver_url "$repo" "$filename_tpl")
    [[ -n "$path_url" ]] && printf "\n" || rtnf "up to date"
    IFS="," read -r remote_ver dl_url save_path <<< "$path_url"
