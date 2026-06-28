@@ -10,8 +10,8 @@ cache_old=${cache_dir}/${pkg_id}.old
 installed_dir=${apps_dir}/${pkg_id}
 
 install_pkg() {
-   local repo="filebrowser/filebrowser"
-   local filename_tpl="linux-amd64-filebrowser.tar.gz"
+   local repo="jesseduffield/lazygit"
+   local filename_tpl="lazygit_${ver_placeholder}_linux_x86_64.tar.gz"
 
    printf "==> checking update for '$pkg_id' ... "
    local path_url=$(test_release_ver_url "$repo" "$filename_tpl")
@@ -29,15 +29,15 @@ install_pkg() {
 }
 
 post_enable() {
-   cp -f ${metapkg_dir}/fbrowser.sh ${bins_dir}/
-   echo "==> installed '$(tilde_path ${bins_dir}/fbrowser.sh)'"
+   ln -sf ${installed_dir}/lazygit ${bins_dir}/
+   echo "==> linked '$(tilde_path ${bins_dir}/lazygit)'"
 }
 
 post_disable() {
-   local f=${bins_dir}/fbrowser.sh
-   if [[ -f $f ]]; then
-      rm -f $f
-      echo "==> removed '$(tilde_path $f)'"
+   local l=${bins_dir}/lazygit
+   if [[ -L $l ]]; then
+      rm -f $l
+      echo "==> removed '$(tilde_path $l)'"
    fi
 }
 
