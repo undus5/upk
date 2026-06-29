@@ -70,8 +70,6 @@ download_file() {
 }
 
 backup_old_installed() {
-   test_var cache_old $cache_old
-   test_var installed_dir $installed_dir
    [[ -d $cache_old ]] && rm -rf $cache_old
    [[ -d $installed_dir ]] && mv $installed_dir $cache_old
 }
@@ -241,4 +239,3 @@ launch_pkg() {
    [[ -x $exec_path ]] || errf "==> not executable : $exec_path"
    $exec_path "$@"
 }
-

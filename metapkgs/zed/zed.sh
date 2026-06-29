@@ -32,4 +32,3 @@ install_pkg() {
 }
 
 source ${upk_src}/includes/metapkg-post.in
-
