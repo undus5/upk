@@ -10,7 +10,7 @@ Features:
 Usage:
 
 ```
-Usage: upk <action> [app_id]
+Usage: upk.sh <action> [app_id]
    list                             : list available packages
    install|remove <app_id[s]> [-y]  : -y skip confirmation
    update         [app_id[s]] [-y]  : empty app_id means update all
@@ -25,4 +25,3 @@ To add custom metapkgs, create `~/upk.d/upk.in` with:
 ```
 UPK_METAPKG_DIR=...
 ```
-
