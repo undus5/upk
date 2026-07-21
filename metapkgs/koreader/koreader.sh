@@ -1,5 +1,5 @@
 #!/bin/bash
-upk_src=$(dirname $(realpath $(which upk)))
+upk_src=$(dirname $(realpath $(which upk.sh)))
 source ${upk_src}/includes/metapkg-pre.in
 
 metapkg_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
