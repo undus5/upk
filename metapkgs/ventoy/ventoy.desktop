@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Ventoy
 Path=VENTOY_DIR
-Exec=upk launch ventoy
+Exec=upk.sh launch ventoy
 Icon=ventoy
 Type=Application
 StartupNotify=true

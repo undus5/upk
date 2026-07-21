@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Helium
 Icon=helium
-Exec=upk launch helium %U
+Exec=upk.sh launch helium %U
 Terminal=false
 Type=Application
 Categories=Network;WebBrowser;

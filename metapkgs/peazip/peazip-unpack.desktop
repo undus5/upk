@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=PeaZip Unpack Smart
 Icon=peazip-unpack
-Exec=upk launch peazip -ext2folder %F
+Exec=upk.sh launch peazip -ext2folder %F
 Terminal=false
 Type=Application
 Categories=Utility;Archiving;Compression;

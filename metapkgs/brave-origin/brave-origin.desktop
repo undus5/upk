@@ -2,7 +2,7 @@
 Name=Brave Origin
 Icon=brave-origin
 StartupWMClass=brave-origin
-Exec=upk launch brave-origin %U
+Exec=upk.sh launch brave-origin %U
 Terminal=false
 Type=Application
 Categories=Network;WebBrowser;

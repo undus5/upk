@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Tor Browser
 Icon=tor-browser
-Exec=upk launch tor-browser
+Exec=upk.sh launch tor-browser
 Type=Application
 Categories=Network;WebBrowser;Security;
 StartupNotify=true

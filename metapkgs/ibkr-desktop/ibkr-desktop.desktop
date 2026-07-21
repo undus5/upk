@@ -2,7 +2,7 @@
 [Desktop Entry]
 Type=Application
 Name=IBKR Desktop
-Exec=upk launch ibkr-desktop
+Exec=upk.sh launch ibkr-desktop
 Icon=ibkr-desktop
 Categories=Application;
 StartupWMClass=install4j-launcher-Main

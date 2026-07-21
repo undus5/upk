@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Waterfox
 Icon=waterfox
-Exec=upk launch waterfox %U
+Exec=upk.sh launch waterfox %U
 Terminal=false
 Type=Application
 Categories=Network;WebBrowser;

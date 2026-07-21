@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Nvim
 Icon=nvim
-Exec=upk launch open-with-terminal nvim %F
+Exec=upk.sh launch open-with-terminal nvim %F
 Terminal=false
 Type=Application
 Categories=Utility;TextEditor;

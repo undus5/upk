@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Obsidian
 Icon=obsidian
-Exec=upk launch obsidian
+Exec=upk.sh launch obsidian
 Terminal=false
 Type=Application
 MimeType=text/plain;

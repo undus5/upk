@@ -2,7 +2,7 @@
 Name=Ungoogled Chromium
 Icon=ungoogled-chromium
 StartupWMClass=chromium
-Exec=upk launch ungoogled-chromium %U
+Exec=upk.sh launch ungoogled-chromium %U
 Terminal=false
 Type=Application
 Categories=Network;WebBrowser;

@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Android Studio
-Exec=upk launch android-studio
+Exec=upk.sh launch android-studio
 Icon=android-studio
 Terminal=false
 Type=Application

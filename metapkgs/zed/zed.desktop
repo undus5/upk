@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Zed
 Icon=zed
-Exec=upk launch zed %U
+Exec=upk.sh launch zed %U
 Type=Application
 StartupNotify=true
 Categories=Utility;TextEditor;Development;IDE;

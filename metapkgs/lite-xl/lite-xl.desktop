@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Lite XL
 Icon=lite-xl
-Exec=upk launch lite-xl %F
+Exec=upk.sh launch lite-xl %F
 Terminal=false
 Type=Application
 MimeType=text/plain;
