@@ -112,9 +112,14 @@ update_installed() {
 }
 
 case "$1" in
-   install|update|remove)
+   install|update|remove|enable|disable|lock|unlock)
       sub_cmd="$1"; shift
       skip_confirm=
+      case $sub_cmd in
+         enable|disable|lock|unlock)
+            skip_confirm="-y"
+            ;;
+      esac
       if [[ "$sub_cmd" == "update" ]]; then
          if [[ -z "$@" ]]; then
             update_installed; exit 0
@@ -143,7 +148,7 @@ case "$1" in
          ${pkg_script} $sub_cmd
       done
       ;;
-   enable|disable|lock|unlock|launch)
+   launch)
       sub_cmd="$1"
       pkg_id=${2%/}
       metapkg_dir=$(get_metapkg_dir $pkg_id)
@@ -164,4 +169,3 @@ case "$1" in
       get_help; exit 1
       ;;
 esac
-
