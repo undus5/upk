@@ -9,11 +9,13 @@ apps_dir=$data_dir/apps
 bins_dir=$data_dir/bins
 vers_dir=$data_dir/vers
 cache_dir=$data_dir/cache
+runs_dir=$data_dir/runs
 
 [[ -d $apps_dir ]] || mkdir -p $apps_dir
 [[ -d $bins_dir ]] || mkdir -p $bins_dir
 [[ -d $vers_dir ]] || mkdir -p $vers_dir
 [[ -d $cache_dir ]] || mkdir -p $cache_dir
+[[ -d $runs_dir ]] || mkdir -p $runs_dir
 
 entries_dir=~/.local/share/applications
 icons_dir=~/.icons

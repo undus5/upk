@@ -1,5 +1,7 @@
 #!/bin/bash
 
+exec_name="filebrowser.sh"
+
 install_pkg() {
    local repo="filebrowser/filebrowser"
    local filename_tpl="linux-amd64-filebrowser.tar.gz"
@@ -27,12 +29,14 @@ install_pkg() {
 }
 
 post_enable() {
-   cp -f ${metapkg_dir}/fbrowser.sh ${bins_dir}/
-   echo "==> installed '$(tilde_path ${bins_dir}/fbrowser.sh)'"
+   cp -f ${metapkg_dir}/${exec_name} ${installed_dir}/
+   echo "==> installed '$(tilde_path ${installed_dir}/${exec_name})'"
+   ln -sf ../apps/${pkg_id}/${exec_name} ${bins_dir}/
+   echo "==> installed '$(tilde_path ${bins_dir}/${exec_name})'"
 }
 
 post_disable() {
-   local f=${bins_dir}/fbrowser.sh
+   local f=${bins_dir}/${exec_name}
    if [[ -f $f ]]; then
       rm -f $f
       echo "==> removed '$(tilde_path $f)'"
