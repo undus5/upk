@@ -9,16 +9,21 @@ db_dir=~/.local/share/filebrowser
 
 db_file=${db_dir}/filebrowser.db
 
-conf_in=${db_dir}/config.in
-[[ -f $conf_in ]] && source $conf_in
+if [[ -f ${db_dir}/config.sh ]]; then
+   source ${db_dir}/config.sh
+fi
 
-port=
-[[ -n "$PORT" ]] && port=$PORT
+port=""
+if [[ -n "$PORT" ]]; then
+   port=$PORT
+fi
 (( port > 1024 && port < 65536 )) || port=
 port=${port:-8586}
 
-pub_dir=
-[[ -n "$PUBLIC_DIR" ]] && pub_dir=$(realpath $PUBLIC_DIR)
+pub_dir=""
+if [[ -n "$PUBLIC_DIR" ]]; then
+   pub_dir=$(realpath $PUBLIC_DIR)
+fi
 pub_dir=${pub_dir:-$(realpath ~/Public)}
 
 self_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))

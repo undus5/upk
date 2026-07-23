@@ -7,7 +7,10 @@ home_dir=$(realpath ~)
 errf() { printf "${@}\n" >&2; exit 1; }
 get_help() { echo "Usage: $(basename $0) <sandbox_dir> <exec_path>"; }
 
-[[ -z "$sandbox_dir" || -z "$exec_path" ]] && get_help && exit 1
+if [[ -z "$sandbox_dir" || -z "$exec_path" ]]; then
+   get_help
+   exit 1
+fi
 [[ -d "$sandbox_dir" ]] || errf "directory not found: ${sandbox_dir}"
 
 binds_or_links=""

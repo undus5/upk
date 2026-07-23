@@ -4,7 +4,9 @@ self_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
 proj_dir=$self_dir
 source ${proj_dir}/header.sh
 # import $UPK_METAPKG_DIR
-[[ -f ${data_dir}/env.sh ]] && source ${data_dir}/env.sh
+if [[ -f ${data_dir}/env.sh ]]; then
+   source ${data_dir}/env.sh
+fi
 
 (( EUID != 0 )) || errf "==> abort for superuser"
 
@@ -36,7 +38,9 @@ list_metapkgs() {
       done
       for pkg_id in "${pkg_ids[@]}"; do
          printf "%-${max_len}s" "$pkg_id"
-         [[ -f "${vers_dir}/${pkg_id}.txt" ]] && printf "  [installed]"
+         if [[ -f "${vers_dir}/${pkg_id}.txt" ]]; then
+            printf "  [installed]"
+         fi
          printf "\n"
       done
 }

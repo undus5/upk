@@ -14,28 +14,23 @@ fetch_latest_ver() {
 }
 
 install_pkg() {
-   test_var cache_old $cache_old
-   test_var installed_dir $installed_dir
    local local_ver=$(get_local_ver)
-   [[ "$local_ver" == "locked" ]] && exit 0
+   if [[ "$local_ver" == "locked" ]]; then
+      exit 0
+   fi
    local remote_ver=$(fetch_latest_ver)
-   [[ -z "$(compare_dot_vers $remote_ver $local_ver)" ]] && exit 0
+   if [[ -z "$(compare_dot_vers $remote_ver $local_ver)" ]]; then
+      exit 0
+   fi
    local api_url="https://api.github.com/repos/brave/brave-browser"
    api_url+="/releases/tags/v${remote_ver}"
    local filename="${pkg_id}-${remote_ver}-linux-amd64.zip"
-   test_cmd curl; test_cmd jq
    local dl_url=$(curl -sL $api_url | jq -r "$(jq_dl_url_filter $filename)")
    local save_path=${cache_dir}/${filename}
-   echo "==> downloading '${filename}' ..."
-   if [[ -f "${save_path}" ]]; then
-      echo "==> found in cache"
-   else
-      curl --create-dirs -o ${save_path} -#L ${dl_url}
-   fi
-   # backup old installed
-   [[ -d $cache_old ]] && rm -rf $cache_old
-   [[ -d $installed_dir ]] && mv $installed_dir $cache_old
-   # backup end
+
+   download_file $dl_url $save_path
+   backup_old_installed
+
    unpack_dir=${save_path%.*}
    mkdir ${unpack_dir}
    echo "==> unpacking ${filename} ..."

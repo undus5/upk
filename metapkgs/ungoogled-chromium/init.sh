@@ -28,7 +28,9 @@ fetch_release_ver() {
             remote_ver=$rver; break
          fi
       done
-      [[ -n "$remote_ver" ]] && break
+      if [[ -n "$remote_ver" ]]; then
+         break
+      fi
    done
    echo $remote_ver
 }
@@ -75,12 +77,18 @@ install_pkg() {
    test_var installed_dir $installed_dir
    test_var exec_path $exec_path
    local local_ver=$(get_local_ver)
-   [[ "$local_ver" == "locked" ]] && exit 0
+   if [[ "$local_ver" == "locked" ]]; then
+      exit 0
+   fi
 
    printf "==> checking update for '$pkg_id' ... "
    local remote_ver=$(fetch_release_ver)
    remote_ver=$(compare_vers $remote_ver $local_ver)
-   [[ -n "$remote_ver" ]] && printf "\n" || rtnf "up to date"
+   if [[ -n "$remote_ver" ]]; then
+      printf "\n"
+   else
+      rtnf "up to date"
+   fi
 
    local filename="ungoogled-chromium-${remote_ver}-x86_64.AppImage"
    local dl_url="https://github.com"

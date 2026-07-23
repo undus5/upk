@@ -4,8 +4,12 @@ errf() { printf "${@}\n" >&2; exit 1; }
 test_cmd() { command -v $1 &>/dev/null; }
 
 test_cmd foot && term=foot
-[[ -z "$term" ]] && test_cmd alacritty && term=alacritty
-[[ -z "$term" ]] && errf "==> terminal emulator not found"
+if [[ -z "$term" ]]; then
+   test_cmd alacritty && term=alacritty
+fi
+if [[ -z "$term" ]]; then
+   errf "==> terminal emulator not found"
+fi
 
 if [[ -d $1 ]]; then
     wkdir=$1; shift

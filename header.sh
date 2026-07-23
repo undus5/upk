@@ -37,10 +37,14 @@ test_var() { [[ -n "$2" ]] || errf "undefined var: $1"; }
 tilde_path() { echo "$1" | sed "s#$(realpath ~)#~#"; }
 
 get_local_ver() {
-   [[ -n "$1" ]] && pkg_id="$1"
+   if [[ -n "$1" ]]; then
+      pkg_id="$1"
+   fi
    test_var pkg_id ${pkg_id}
    local ver_file=${vers_dir}/${pkg_id}.txt
-   [[ -f "${ver_file}" ]] && cat ${ver_file}
+   if [[ -f "${ver_file}" ]]; then
+      cat ${ver_file}
+   fi
 }
 
 get_metapkg_dir() {
@@ -52,11 +56,15 @@ get_metapkg_dir() {
       local test_dir
       if [[ -n "$UPK_METAPKG_DIR" && -d $UPK_METAPKG_DIR ]]; then
          test_dir=${UPK_METAPKG_DIR}/${pkg_id}
-         [[ -d $test_dir ]] && pkg_dir=$test_dir
+         if [[ -d $test_dir ]]; then
+            pkg_dir=$test_dir
+         fi
       fi
       if [[ ! -d $pkg_dir ]]; then
          test_dir=${self_dir}/metapkgs/${pkg_id}
-         [[ -d $test_dir ]] && pkg_dir=$test_dir
+         if [[ -d $test_dir ]]; then
+            pkg_dir=$test_dir
+         fi
       fi
       if [[ -d $pkg_dir ]]; then
          echo $pkg_dir

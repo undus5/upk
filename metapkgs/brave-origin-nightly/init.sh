@@ -1,7 +1,5 @@
 #!/bin/bash
 
-metapkg_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
-channel=nightly
-src=${metapkg_dir}/../brave-origin/brave-origin.sh
-[[ -x "${src}" ]] && source ${src}
-
+pdir=$(dirname $(realpath ${BASH_SOURCE[0]}))
+pdir=$(dirname $pdir)
+source ${pdir}/brave-origin/init.sh

@@ -9,7 +9,9 @@ install_pkg() {
    test_var exec_name $exec_name
 
    local local_ver=$(get_local_ver)
-   [[ "$local_ver" == "locked" ]] && exit 0
+   if [[ "$local_ver" == "locked" ]]; then
+      exit 0
+   fi
 
    mkdir -p $installed_dir
    self_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))

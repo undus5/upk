@@ -6,7 +6,9 @@ install_pkg() {
    test_var cache_old $cache_old
    test_var installed_dir $installed_dir
    local local_ver=$(get_local_ver)
-   [[ "$local_ver" == "locked" ]] && exit 0
+   if [[ "$local_ver" == "locked" ]]; then
+      exit 0
+   fi
 
    local filename="ntws-latest-standalone-linux-x64.sh"
    local dl_url="https://download2.interactivebrokers.com/installers/ntws"

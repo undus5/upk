@@ -9,7 +9,11 @@ install_pkg() {
 
    printf "==> checking update for '$pkg_id' ... "
    local path_url=$(test_release_ver_url "$repo" "$filename_tpl")
-   [[ -n "$path_url" ]] && printf "\n" || rtnf "up to date"
+   if [[ -n "$path_url" ]]; then
+      printf "\n"
+   else
+      rtnf "up to date"
+   fi
    IFS="," read -r remote_ver dl_url save_path <<< "$path_url"
 
    dl_url="https://cdn.waterfox.com/waterfox/releases/${remote_ver}"

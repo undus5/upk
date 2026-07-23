@@ -54,12 +54,16 @@ test_release_ver_url() {
    local repo="$1"
    local filename_tpl="$2"
    local local_ver=$(get_local_ver)
-   [[ "$local_ver" == "locked" ]] && exit 0
+   if [[ "$local_ver" == "locked" ]]; then
+      exit 0
+   fi
    local ver_url=$(fetch_release_ver_url "$repo" "$filename_tpl")
    local remote_ver=
    local dl_url=
    IFS="," read -r remote_ver dl_url <<< "$ver_url"
-   [[ -z "$(compare_dot_vers $remote_ver $local_ver)" ]] && exit 0
+   if [[ -z "$(compare_dot_vers $remote_ver $local_ver)" ]]; then
+      exit 0
+   fi
    local filename=${filename_tpl/$ver_holder/$remote_ver}
    local save_path=${cache_dir}/${filename}
    echo "${remote_ver},${dl_url},${save_path}"
@@ -92,7 +96,11 @@ install_release_appimage() {
 
    printf "==> checking update for '$pkg_id' ... "
    local path_url=$(test_release_ver_url "$repo" "$filename_tpl")
-   [[ -n "$path_url" ]] && printf "\n" || rtnf "up to date"
+   if [[ -n "$path_url" ]]; then
+      printf "\n"
+   else
+      rtnf "up to date"
+   fi
    IFS="," read -r remote_ver dl_url save_path <<< "$path_url"
    download_file "$dl_url" "$save_path"
    backup_old_installed
@@ -147,12 +155,16 @@ fetch_commit_date_sha() {
 test_commit_date_sha() {
    local repo="$1"
    local local_ver=$(get_local_ver)
-   [[ "$local_ver" == "locked" ]] && exit 0
+   if [[ "$local_ver" == "locked" ]]; then
+      exit 0
+   fi
    local date_sha=$(fetch_commit_date_sha "$repo")
    local remote_ver=
    local sha=
    IFS="," read -r remote_ver sha <<< "$date_sha"
-   [[ -z "$(compare_date_vers $remote_ver $local_ver)" ]] && exit 0
+   if [[ -z "$(compare_date_vers $remote_ver $local_ver)" ]]; then
+      exit 0
+   fi
    local dl_url="https://github.com/${repo}/archive/${sha}.zip"
    local repo_author=
    local repo_name=
@@ -220,14 +232,20 @@ disable_entry() {
       -name "*.desktop")
    for f in ${files[@]}; do
       ff=${entries_dir}/$(basename $f)
-      [[ -f $ff ]] && rm -f $ff && echo "==> removed '$(tilde_path $ff)'"
+      if [[ -f $ff ]]; then
+         rm -f $ff
+         echo "==> removed '$(tilde_path $ff)'"
+      fi
    done
    update-desktop-database ${entries_dir}
    mapfile -t files < <(find $metapkg_dir -mindepth 1 -maxdepth 1 -type f \
       -name "*.png")
    for f in ${files[@]}; do
       ff=${icons_dir}/$(basename $f)
-      [[ -f $ff ]] && rm -f $ff && echo "==> removed '$(tilde_path $ff)'"
+      if [[ -f $ff ]]; then
+         rm -f $ff
+         echo "==> removed '$(tilde_path $ff)'"
+      fi
    done
 }
 
