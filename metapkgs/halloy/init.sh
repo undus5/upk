@@ -15,8 +15,8 @@ install_pkg() {
 
    unpack_dir=${save_path%.tar.*}
    mkdir -p ${unpack_dir}
-   tar xf ${save_path} -C ${unpack_dir}
-   mv ${unpack_dir} ${installed_dir}
+   tar xf $save_path -C $unpack_dir
+   mv $unpack_dir $installed_dir
    echo "==> installed '$(tilde_path $installed_dir)'"
    write_ver "$remote_ver"
 }

@@ -15,8 +15,8 @@ install_pkg() {
    backup_old_installed
 
    unpack_dir=${cache_dir}/${pkg_id}-${remote_ver}
-   tar xf ${save_path} -C ${cache_dir}
-   mv ${unpack_dir} ${installed_dir}
+   tar xf $save_path -C $cache_dir
+   mv $unpack_dir $installed_dir
    echo "==> installed '$(tilde_path $installed_dir)'"
    write_ver "$remote_ver"
 }

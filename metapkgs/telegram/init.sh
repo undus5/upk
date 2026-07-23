@@ -14,8 +14,8 @@ install_pkg() {
    backup_old_installed
 
    unpack_dir=${cache_dir}/Telegram
-   tar xf ${save_path} -C ${cache_dir}
-   mv ${unpack_dir} ${installed_dir}
+   tar xf $save_path -C $cache_dir
+   mv $unpack_dir $installed_dir
    echo "==> installed '$(tilde_path $installed_dir)'"
    lock_ver
 }
