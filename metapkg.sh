@@ -1,20 +1,27 @@
 #!/bin/bash
 
 self_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
-source ${self_dir}/const.in
+proj_dir=$self_dir
+source ${proj_dir}/header.sh
 
-ver_placeholder="_VERSION_"
-
-# metapkg_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
-# pkg_id=$(basename $metapkg_dir)
-# cache_old=${cache_dir}/${pkg_id}.old
-#
-# installed_dir=
-# exec_path=${installed_dir}/...
+################################################################################
 
 install_pkg() { return; }
 post_enable() { return; }
 post_disable() { return; }
+
+pkg_id="$1"; shift
+sub_cmd="$1"; shift
+
+cache_old=${cache_dir}/${pkg_id}.old
+installed_dir=${apps_dir}/${pkg_id}
+# exec_path=${installed_dir}/...
+
+metapkg_dir=$(get_metapkg_dir $pkg_id)
+[[ -n "$metapkg_dir" ]] || errf "==> metapkg not found: $pkg_id"
+source ${metapkg_dir}/init.sh
+
+################################################################################
 
 jq_dl_url_filter() {
    local filename="$1"
@@ -36,7 +43,7 @@ fetch_release_ver_url() {
    test_cmd curl; test_cmd jq
    curl -sL $api_url > $json_tmpfile
    local ver=$(cat $json_tmpfile | jq -r '.tag_name|ltrimstr("v")')
-   local filename=${filename_tpl/$ver_placeholder/$ver}
+   local filename=${filename_tpl/$ver_holder/$ver}
    local url=$(cat $json_tmpfile | jq -r "$(jq_dl_url_filter $filename)")
    echo "${ver},${url}"
    rm -f $json_tmpfile
@@ -53,7 +60,7 @@ test_release_ver_url() {
    local dl_url=
    IFS="," read -r remote_ver dl_url <<< "$ver_url"
    [[ -z "$(compare_dot_vers $remote_ver $local_ver)" ]] && exit 0
-   local filename=${filename_tpl/$ver_placeholder/$remote_ver}
+   local filename=${filename_tpl/$ver_holder/$remote_ver}
    local save_path=${cache_dir}/${filename}
    echo "${remote_ver},${dl_url},${save_path}"
 }
@@ -183,12 +190,14 @@ remove_pkg() {
 # copy desktop entries and icons
 enable_entry() {
    test_var metapkg_dir $metapkg_dir
-   local files=
+   local files
+   local dest
    mapfile -t files < <(find $metapkg_dir -mindepth 1 -maxdepth 1 -type f \
       -name "*.desktop")
    for f in ${files[@]}; do
-      cp -f $f ${entries_dir}/
-      echo "==> installed '$(tilde_path ${entries_dir}/$(basename $f))'"
+      dest=${entries_dir}/$(basename $f)
+      sed "s#${exec_holder}#${exec_path}#" $f > ${dest}
+      echo "==> installed '$(tilde_path ${dest})'"
    done
    update-desktop-database ${entries_dir}
    mapfile -t files < <(find $metapkg_dir -mindepth 1 -maxdepth 1 -type f \
@@ -239,3 +248,38 @@ launch_pkg() {
    [[ -x $exec_path ]] || errf "==> not executable : $exec_path"
    $exec_path "$@"
 }
+
+################################################################################
+
+case "$sub_cmd" in
+   install)
+      install_pkg
+      enable_entry
+      post_enable
+      ;;
+   update)
+      install_pkg
+      ;;
+   enable)
+      enable_entry
+      post_enable
+      ;;
+   disable)
+      disable_entry
+      post_disable
+      ;;
+   remove)
+      remove_pkg
+      disable_entry
+      post_disable
+      ;;
+   lock)
+      lock_ver
+      ;;
+   unlock)
+      unlock_ver
+      ;;
+   launch)
+      launch_pkg "$@"
+      ;;
+esac

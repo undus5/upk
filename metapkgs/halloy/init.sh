@@ -1,18 +1,10 @@
 #!/bin/bash
 
-upk_src=$(dirname $(realpath $(which upk.sh)))
-source ${upk_src}/includes/metapkg-pre.in
-
-metapkg_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
-pkg_id=$(basename $metapkg_dir)
-cache_old=${cache_dir}/${pkg_id}.old
-
-installed_dir=${apps_dir}/${pkg_id}
-exec_path=${installed_dir}/${pkg_id}
+exec_path=${installed_dir}/bin/halloy
 
 install_pkg() {
-   local repo="peazip/PeaZip"
-   local filename_tpl="peazip_portable-${ver_placeholder}.LINUX.Qt6.x86_64.tar.gz"
+   local repo="squidowl/halloy"
+   local filename_tpl="halloy-${ver_holder}-x86_64-linux.tar.gz"
 
    printf "==> checking update for '$pkg_id' ... "
    local path_url=$(test_release_ver_url "$repo" "$filename_tpl")
@@ -22,11 +14,9 @@ install_pkg() {
    backup_old_installed
 
    unpack_dir=${save_path%.tar.*}
-   tar xf ${save_path} -C ${cache_dir}
+   mkdir -p ${unpack_dir}
+   tar xf ${save_path} -C ${unpack_dir}
    mv ${unpack_dir} ${installed_dir}
    echo "==> installed '$(tilde_path $installed_dir)'"
    write_ver "$remote_ver"
 }
-
-source ${upk_src}/includes/metapkg-post.in
-

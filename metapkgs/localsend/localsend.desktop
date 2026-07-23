@@ -1,9 +1,8 @@
 [Desktop Entry]
 Name=LocalSend
 Icon=localsend
-Exec=upk.sh launch localsend
+Exec=_EXEC_
 Terminal=false
 Type=Application
 Categories=Network;Utility;
 StartupNotify=true
-

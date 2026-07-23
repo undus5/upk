@@ -1,7 +1,7 @@
 #!/bin/bash
 
-sandbox_dir="${1}"
-exec_path="${2}"
+sandbox_dir="$1"
+exec_path="$2"
 home_dir=$(realpath ~)
 
 errf() { printf "${@}\n" >&2; exit 1; }
@@ -10,7 +10,7 @@ get_help() { echo "Usage: $(basename $0) <sandbox_dir> <exec_path>"; }
 [[ -z "$sandbox_dir" || -z "$exec_path" ]] && get_help && exit 1
 [[ -d "$sandbox_dir" ]] || errf "directory not found: ${sandbox_dir}"
 
-binds_or_links=
+binds_or_links=""
 if [[ -L /bin ]]; then
    binds_or_links+=" --symlink $(realpath /bin) /bin"
 else
@@ -39,4 +39,3 @@ bwrap \
    --share-net \
    --bind $sandbox_dir $home_dir \
    $binds_or_links $exec_path
-

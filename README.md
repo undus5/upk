@@ -20,7 +20,7 @@ Usage: upk.sh <action> [app_id]
    -h|--help
 ```
 
-To add custom metapkgs, create `~/upk.d/upk.in` with:
+To add custom metapkgs, create `~/upk.d/env.sh` with:
 
 ```
 UPK_METAPKG_DIR=...

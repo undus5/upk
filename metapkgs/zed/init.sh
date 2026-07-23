@@ -1,13 +1,5 @@
 #!/bin/bash
 
-upk_src=$(dirname $(realpath $(which upk.sh)))
-source ${upk_src}/includes/metapkg-pre.in
-
-metapkg_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
-pkg_id=$(basename $metapkg_dir)
-cache_old=${cache_dir}/${pkg_id}.old
-
-installed_dir=${apps_dir}/${pkg_id}
 exec_path=${installed_dir}/bin/zed
 
 install_pkg() {
@@ -30,5 +22,3 @@ install_pkg() {
    echo "==> installed '$(tilde_path $installed_dir)'"
    write_ver "$remote_ver"
 }
-
-source ${upk_src}/includes/metapkg-post.in

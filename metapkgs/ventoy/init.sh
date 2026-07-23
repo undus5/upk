@@ -1,19 +1,11 @@
 #!/bin/bash
 
-upk_src=$(dirname $(realpath $(which upk.sh)))
-source ${upk_src}/includes/metapkg-pre.in
-
-metapkg_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
-pkg_id=$(basename $metapkg_dir)
-cache_old=${cache_dir}/${pkg_id}.old
-
-installed_dir=${apps_dir}/${pkg_id}
-exec_path=${installed_dir}/VentoyGUI.x86_64
+exec_path=${installed_dir}/launch.sh
 exec_cli=ventoy-cli.sh
 
 install_pkg() {
    local repo="ventoy/Ventoy"
-   local filename_tpl="ventoy-${ver_placeholder}-linux.tar.gz"
+   local filename_tpl="ventoy-${ver_holder}-linux.tar.gz"
 
    printf "==> checking update for '$pkg_id' ... "
    local path_url=$(test_release_ver_url "$repo" "$filename_tpl")
@@ -30,9 +22,10 @@ install_pkg() {
 }
 
 post_enable() {
-   sed -i "s#VENTOY_DIR#${installed_dir}#" ${entries_dir}/${pkg_id}.desktop
-   cp -f ${metapkg_dir}/${exec_cli} ${bins_dir}
-   echo "==> installed '$(tilde_path ${bins_dir})/${exec_cli}'"
+   cp -f ${metapkg_dir}/launch.sh ${installed_dir}/
+   echo "==> installed '$(tilde_path ${installed_dir}/launch.sh)'"
+   cp -f ${metapkg_dir}/${exec_cli} ${bins_dir}/
+   echo "==> installed '$(tilde_path ${bins_dir}/${exec_cli})'"
 }
 
 post_disable() {
@@ -41,6 +34,3 @@ post_disable() {
       echo "==> removed '$(tilde_path ${bins_dir})/${exec_cli}'"
    fi
 }
-
-source ${upk_src}/includes/metapkg-post.in
-

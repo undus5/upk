@@ -2,10 +2,9 @@
 Name=Ungoogled Chromium
 Icon=ungoogled-chromium
 StartupWMClass=chromium
-Exec=upk.sh launch ungoogled-chromium %U
+Exec=_EXEC_ %U
 Terminal=false
 Type=Application
 Categories=Network;WebBrowser;
 MimeType=application/pdf;application/rdf+xml;application/rss+xml;application/xhtml+xml;application/xhtml_xml;application/xml;image/gif;image/jpeg;image/png;image/webp;text/html;text/xml;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/ipfs;x-scheme-handler/ipns;
 StartupNotify=true
-

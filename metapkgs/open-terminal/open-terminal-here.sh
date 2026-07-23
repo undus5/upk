@@ -30,4 +30,3 @@ else
         alacritty
     fi
 fi
-

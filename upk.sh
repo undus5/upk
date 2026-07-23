@@ -1,9 +1,10 @@
 #!/bin/bash
 
 self_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
-source ${self_dir}/includes/const.in
+proj_dir=$self_dir
+source ${proj_dir}/header.sh
 # import $UPK_METAPKG_DIR
-[[ -f ${data_dir}/upk.in ]] && source ${data_dir}/upk.in
+[[ -f ${data_dir}/env.sh ]] && source ${data_dir}/env.sh
 
 (( EUID != 0 )) || errf "==> abort for superuser"
 
@@ -16,22 +17,6 @@ get_help() {
    printf "   lock           <app_id>          : prevent update and mark installed\n"
    printf "   clean          [old]             : clean cache\n"
    printf "   -h|--help\n"
-}
-
-get_metapkg_dir() {
-   local pkg_id="$1"
-   test_var pkg_id ${pkg_id}
-   local pkg_dir=
-   local test_dir=
-   if [[ -n "$UPK_METAPKG_DIR" && -d $UPK_METAPKG_DIR ]]; then
-      test_dir=${UPK_METAPKG_DIR}/${pkg_id}
-      [[ -d $test_dir ]] && pkg_dir=$test_dir
-   fi
-   if [[ ! -d $pkg_dir ]]; then
-      test_dir=${self_dir}/metapkgs/${pkg_id}
-      [[ -d $test_dir ]] && pkg_dir=$test_dir
-   fi
-   [[ -d $pkg_dir ]] && echo $pkg_dir || errf "==> metapkg not found: $pkg_id"
 }
 
 list_metapkgs() {
@@ -69,9 +54,8 @@ clean_cache() {
 }
 
 get_confirmation() {
-   local prompt="$1"
-   local skip_flag="$2"
-   shift && shift
+   local prompt="$1"; shift
+   local skip_flag="$1"; shift
    local pkg_ids=("$@")
    local confirmation=
    if [[ "$skip_flag" != "-y" ]]; then
@@ -90,31 +74,36 @@ get_confirmation() {
 update_installed() {
    local skip_confirm="$1"
    local pkg_ids=()
-   local pkg_scripts=()
-   local ver=
-   local txts=
+   local txts
+   local tname
+   local ver
    mapfile -t txts < <(ls -1 ${vers_dir}/*.txt)
-   [[ "${#txts[@]}" == "0" ]] && errf "==> no packages need update"
-      local tname=
-      for t in "${txts[@]}"; do
-         tname=$(basename $t)
-         pkg_id=${tname%.*}
-         pkg_scripts+=("$(get_metapkg_dir "$pkg_id")/${pkg_id}.sh")
-         ver=$(get_local_ver "$pkg_id")
-         [[ "$ver" != "locked" ]] && pkg_ids+=("$pkg_id")
-      done
-      [[ "${#pkg_ids[@]}" == "0" ]] && errf "==> no packages need update"
-         local prompt="Check and update packages? [y/N]: "
-         get_confirmation "$prompt" "$skip_confirm" "${pkg_ids[@]}"
-         for pkg_script in "${pkg_scripts[@]}"; do
-            ${pkg_script} $sub_cmd
-         done
+   for t in "${txts[@]}"; do
+      tname=$(basename $t)
+      pkg_id=${tname%.*}
+      ver=$(get_local_ver "$pkg_id")
+      if [[ "$ver" != "locked" ]]; then
+         pkg_ids+=("$pkg_id")
+      fi
+   done
+   if [[ "${#pkg_ids[@]}" == "0" ]]; then
+      echo "==> packages already updated"; exit 0
+   fi
+   local prompt="Check and update packages? [y/N]: "
+   get_confirmation "$prompt" "$skip_confirm" "${pkg_ids[@]}"
+   local pkg_id
+   local metapkg_dir
+   for pkg_id in "${pkg_ids[@]}"; do
+      metapkg_dir=$(get_metapkg_dir $pkg_id)
+      [[ -n "$metapkg_dir" ]] || errf "metapkg not found: $pkg_id"
+      ${proj_dir}/metapkg.sh $pkg_id update "$@"
+   done
 }
 
-case "$1" in
+sub_cmd="$1"; shift
+case "$sub_cmd" in
    install|update|remove|enable|disable|lock|unlock)
-      sub_cmd="$1"; shift
-      skip_confirm=
+      skip_confirm=false
       case $sub_cmd in
          enable|disable|lock|unlock)
             skip_confirm="-y"
@@ -124,42 +113,39 @@ case "$1" in
          if [[ -z "$@" ]]; then
             update_installed; exit 0
          elif [[ "$1" == "-y" ]]; then
-            skip_confirm="-y"
-            shift
+            skip_confirm="-y"; shift
             if [[ -z "$@" ]]; then
                update_installed -y; exit 0
             fi
          fi
       fi
       pkg_ids=()
-      pkg_scripts=()
-      for arg in "$@"; do
-         arg=${arg%/}
-         if [[ "$arg" == "-y" ]]; then
+      for pkg_id in "$@"; do
+         arg=${pkg_id%/}
+         if [[ "$pkg_id" == "-y" ]]; then
             skip_confirm="-y"
          else
-            pkg_scripts+=("$(get_metapkg_dir "$arg")/${arg}.sh")
+            metapkg_dir=$(get_metapkg_dir $pkg_id)
+            [[ -n "$metapkg_dir" ]] || errf "metapkg not found: $pkg_id"
             pkg_ids+=("$arg")
          fi
       done
       prompt="$sub_cmd packages? [y/N]: "
       get_confirmation "$prompt" "$skip_confirm" "${pkg_ids[@]}"
-      for pkg_script in "${pkg_scripts[@]}"; do
-         ${pkg_script} $sub_cmd
+      for pkg_id in "${pkg_ids[@]}"; do
+         ${proj_dir}/metapkg.sh $pkg_id $sub_cmd
       done
       ;;
    launch)
-      sub_cmd="$1"
-      pkg_id=${2%/}
+      pkg_id=${1%/}; shift
       metapkg_dir=$(get_metapkg_dir $pkg_id)
-      shift && shift
-      ${metapkg_dir}/${pkg_id}.sh $sub_cmd "$@"
+      [[ -n "$metapkg_dir" ]] || errf "metapkg not found: $pkg_id"
+      ${proj_dir}/metapkg.sh $pkg_id $sub_cmd "$@"
       ;;
    list)
       list_metapkgs
       ;;
    clean)
-      shift
       clean_cache $@
       ;;
    ""|-h|--help)

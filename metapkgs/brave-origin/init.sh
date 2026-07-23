@@ -1,17 +1,10 @@
 #!/bin/bash
 
-upk_src=$(dirname $(realpath $(which upk.sh)))
-source ${upk_src}/includes/metapkg-pre.in
-
-self_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
-metapkg_dir=${metapkg_dir:-$self_dir}
-pkg_id=brave-origin
-channel=${channel:-release}
-[[ "$channel" != "release" ]] && pkg_id+="-${channel}"
-cache_old=${cache_dir}/${pkg_id}.old
-
-installed_dir=${apps_dir}/${pkg_id}
 exec_path=${installed_dir}/${pkg_id}
+
+channel=${pkg_id#brave-origin}
+channel=${channel#-}
+channel=${channel:-release}
 
 fetch_latest_ver() {
    test_cmd curl
@@ -51,6 +44,3 @@ install_pkg() {
    echo "==> installed '$(tilde_path $installed_dir)'"
    write_ver "$remote_ver"
 }
-
-source ${upk_src}/includes/metapkg-post.in
-

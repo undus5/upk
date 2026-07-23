@@ -23,6 +23,9 @@ entries_dir=~/.local/share/applications
 [[ -d $icons_dir ]] || mkdir -p $icons_dir
 [[ -d $entries_dir ]] || mkdir -p $entries_dir
 
+ver_holder="_VERSION_"
+exec_holder="_EXEC_"
+
 # helper functions
 errf() { printf "$@\n" >&2; exit 1; }
 rtnf() { printf "$@\n"; exit 0; }
@@ -38,3 +41,23 @@ get_local_ver() {
    [[ -f "${ver_file}" ]] && cat ${ver_file}
 }
 
+get_metapkg_dir() {
+   local pkg_id="$1"
+   if [[ -z "$pkg_id" ]]; then
+      echo ""
+   else
+      local pkg_dir
+      local test_dir
+      if [[ -n "$UPK_METAPKG_DIR" && -d $UPK_METAPKG_DIR ]]; then
+         test_dir=${UPK_METAPKG_DIR}/${pkg_id}
+         [[ -d $test_dir ]] && pkg_dir=$test_dir
+      fi
+      if [[ ! -d $pkg_dir ]]; then
+         test_dir=${self_dir}/metapkgs/${pkg_id}
+         [[ -d $test_dir ]] && pkg_dir=$test_dir
+      fi
+      if [[ -d $pkg_dir ]]; then
+         echo $pkg_dir
+      fi
+   fi
+}

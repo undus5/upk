@@ -1,10 +1,9 @@
 [Desktop Entry]
 Name=Open Terminal Here
 Icon=foot
-Exec=upk.sh launch open-with-terminal %F
+Exec=_EXEC_ %F
 Terminal=false
 Type=Application
 Categories=System;TerminalEmulator;
 Keywords=shell;prompt;command;commandline;
 MimeType=inode/directory;
-

@@ -1,9 +1,8 @@
 [Desktop Entry]
 Name=Drawio
 Icon=drawio
-Exec=upk.sh launch drawio
+Exec=_EXEC_
 Terminal=false
 Type=Application
 Categories=Development;
 StartupNotify=true
-

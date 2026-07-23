@@ -1,10 +1,9 @@
 [Desktop Entry]
 Name=LosslessCut
 Icon=losslesscut
-Exec=upk.sh launch losslesscut
+Exec=_EXEC_
 Terminal=false
 Type=Application
 MimeType=text/plain;
 Categories=Video;
 StartupNotify=true
-
