@@ -77,8 +77,12 @@ download_file() {
 }
 
 backup_old_installed() {
-   [[ -d $cache_old ]] && rm -rf $cache_old
-   [[ -d $installed_dir ]] && mv $installed_dir $cache_old
+   if [[ -d $cache_old ]]; then
+      rm -rf $cache_old
+   fi
+   if [[ -d $installed_dir ]]; then
+      mv $installed_dir $cache_old
+   fi
 }
 
 install_release_appimage() {

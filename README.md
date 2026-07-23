@@ -1,4 +1,4 @@
-# upk.sh
+# upk
 
 Userland package manager for Linux, distro irrelevant.
 

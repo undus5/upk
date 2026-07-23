@@ -15,13 +15,15 @@ cache_dir=$data_dir/cache
 [[ -d $vers_dir ]] || mkdir -p $vers_dir
 [[ -d $cache_dir ]] || mkdir -p $cache_dir
 
-fonts_dir=~/.local/share/fonts
-icons_dir=~/.icons
 entries_dir=~/.local/share/applications
+icons_dir=~/.icons
+
+[[ -d $entries_dir ]] || mkdir -p $entries_dir
+[[ -d $icons_dir ]] || mkdir -p $icons_dir
+
+fonts_dir=~/.local/share/fonts
 
 [[ -d $fonts_dir ]] || mkdir -p $fonts_dir
-[[ -d $icons_dir ]] || mkdir -p $icons_dir
-[[ -d $entries_dir ]] || mkdir -p $entries_dir
 
 ver_holder="_VERSION_"
 exec_holder="_EXEC_"

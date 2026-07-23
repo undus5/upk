@@ -1,8 +1,8 @@
 #!/bin/bash
 
 install_pkg() {
-   local repo="jesseduffield/lazygit"
-   local filename_tpl="lazygit_${ver_holder}_linux_x86_64.tar.gz"
+   local repo="pythops/impala"
+   local filename_tpl="impala-x86_64-unknown-linux-musl"
 
    printf "==> checking update for '$pkg_id' ... "
    local path_url=$(test_release_ver_url "$repo" "$filename_tpl")
@@ -11,10 +11,9 @@ install_pkg() {
    download_file $dl_url $save_path
    backup_old_installed
 
-   unpack_dir=${cache_dir}/${pkg_id}
-   mkdir -p $unpack_dir
-   tar xf $save_path -C $unpack_dir
-   mv $unpack_dir $installed_dir
+   mkdir -p $installed_dir
+   chmod u+x $save_path
+   cp -f $save_path ${installed_dir}/${pkg_id}
    echo "==> installed '$(tilde_path $installed_dir)'"
    write_ver "$remote_ver"
 }

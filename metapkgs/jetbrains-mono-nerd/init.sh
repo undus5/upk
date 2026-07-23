@@ -1,8 +1,10 @@
 #!/bin/bash
 
+installed_dir=${fonts_dir}/${pkg_id}
+
 install_pkg() {
-   local repo="jesseduffield/lazygit"
-   local filename_tpl="lazygit_${ver_holder}_linux_x86_64.tar.gz"
+   local repo="ryanoasis/nerd-fonts"
+   local filename_tpl="JetBrainsMono.tar.xz"
 
    printf "==> checking update for '$pkg_id' ... "
    local path_url=$(test_release_ver_url "$repo" "$filename_tpl")
@@ -11,23 +13,13 @@ install_pkg() {
    download_file $dl_url $save_path
    backup_old_installed
 
-   unpack_dir=${cache_dir}/${pkg_id}
+   unpack_dir=${save_path%.tar.xz}Nerd
    mkdir -p $unpack_dir
    tar xf $save_path -C $unpack_dir
-   mv $unpack_dir $installed_dir
+   mkdir -p $installed_dir
+   mv ${unpack_dir}/JetBrainsMonoNL*.ttf ${installed_dir}/
+   fc-cache -f
+   rm -rf $unpack_dir
    echo "==> installed '$(tilde_path $installed_dir)'"
    write_ver "$remote_ver"
-}
-
-post_enable() {
-   ln -sf ${installed_dir}/${pkg_id} ${bins_dir}/
-   echo "==> linked '$(tilde_path ${bins_dir}/${pkg_id})'"
-}
-
-post_disable() {
-   local l=${bins_dir}/${pkg_id}
-   if [[ -L $l ]]; then
-      rm -f $l
-      echo "==> removed '$(tilde_path $l)'"
-   fi
 }
