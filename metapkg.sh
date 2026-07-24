@@ -226,6 +226,9 @@ enable_entry() {
       -name "*.desktop")
    for f in ${files[@]}; do
       dest=${entries_dir}/$(basename $f)
+      if [[ "$exec_path" =~ [[:space:]] ]]; then
+         exec_path=\"$exec_path\"
+      fi
       sed "s#${exec_holder}#${exec_path}#" $f > ${dest}
       echo "==> installed '$(tilde_path ${dest})'"
    done
@@ -284,7 +287,7 @@ launch_pkg() {
    if [[ ! -x $exec_path ]]; then
       errf "==> not executable : $exec_path"
    fi
-   $exec_path "$@"
+   "$exec_path" "$@"
 }
 
 ################################################################################
