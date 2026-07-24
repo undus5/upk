@@ -27,3 +27,9 @@ install_pkg() {
    echo "==> installed '$(tilde_path $installed_dir)'"
    write_ver "$remote_ver"
 }
+
+is_enabled() {
+   if [[ -n "$(is_installed)" ]]; then
+      echo "[enabled]"
+   fi
+}

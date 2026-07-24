@@ -3,10 +3,6 @@
 self_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
 proj_dir=$self_dir
 source ${proj_dir}/header.sh
-# import $UPK_METAPKG_DIR
-if [[ -f ${data_dir}/env.sh ]]; then
-   source ${data_dir}/env.sh
-fi
 
 (( EUID != 0 )) || errf "==> abort for superuser"
 
@@ -22,27 +18,45 @@ get_help() {
 }
 
 list_metapkgs() {
-   local ids1=
-   local ids2=
-   local pkg_ids=
+   local ids1
+   local ids2
+   local pkg_ids
+   local is_installed
+   local is_enabled
    if [[ -n "$UPK_METAPKG_DIR" && -d $UPK_METAPKG_DIR ]]; then
       mapfile -t ids1 < <(ls -1 ${UPK_METAPKG_DIR}/)
    fi
-   mapfile -t ids2 < <(ls -1 ${self_dir}/metapkgs/)
-   mapfile -t pkg_ids < <(printf "%s\n" "${ids1[@]}" "${ids2[@]}" | sort -u)
+   mapfile -t ids2 < <(ls -1 ${proj_dir}/metapkgs/)
+   mapfile -t pkg_ids < <(printf "%s\n" "${ids1[@]}" "${ids2[@]}" | uniq)
    local max_len=0
    local curr_len=0
    for pkg_id in "${pkg_ids[@]}"; do
       curr_len=${#pkg_id}
-         (( curr_len > max_len )) && max_len=$curr_len
-      done
-      for pkg_id in "${pkg_ids[@]}"; do
-         printf "%-${max_len}s" "$pkg_id"
-         if [[ -f "${vers_dir}/${pkg_id}.txt" ]]; then
-            printf "  [installed]"
+      if (( curr_len > max_len )); then
+         max_len=$curr_len
+      fi
+   done
+   for pkg_id in "${pkg_ids[@]}"; do
+      printf "%-${max_len}s" "$pkg_id"
+      printf "  "
+      if [[ -f ${vers_dir}/${pkg_id}.txt ]]; then
+         printf " [installed]"
+      else
+         is_installed=$(${proj_dir}/metapkg.sh $pkg_id is_installed)
+         if [[ -n "$is_installed" ]]; then
+            printf " [installed]"
          fi
-         printf "\n"
-      done
+      fi
+      if [[ -f ~/.local/share/applications/${pkg_id}.desktop ]]; then
+         printf " [enabled]"
+      else
+         is_enabled=$(${proj_dir}/metapkg.sh $pkg_id is_enabled)
+         if [[ -n "$is_enabled" ]]; then
+            printf " [enabled]"
+         fi
+      fi
+      printf "\n"
+   done
 }
 
 clean_cache() {

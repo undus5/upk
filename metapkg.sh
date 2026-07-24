@@ -9,9 +9,43 @@ source ${proj_dir}/header.sh
 install_pkg() { return; }
 post_enable() { return; }
 post_disable() { return; }
+is_installed() {
+   if [[ -f ${vers_dir}/${pkg_id}.txt ]]; then
+      echo "[installed]"
+   fi
+}
+is_enabled() {
+   local entry_file=$(find $metapkg_dir -mindepth 1 -maxdepth 1 -type f -name "*.desktop" | head -n 1)
+   if [[ -f $entry_file ]]; then
+      local filename=$(basename $entry_file)
+      if [[ -n "$filename" && -f ~/.local/share/applications/${filename} ]]; then
+         echo "[enabled]"
+      fi
+   fi
+}
+post_disable_cli() {
+   if [[ -n "$exec_name" ]]; then
+      local f=${bins_dir}/${exec_name}
+      if [[ -f $f ]]; then
+         rm -f $f
+         echo "==> removed '$(tilde_path $f)'"
+      fi
+   fi
+}
+is_enabled_cli() {
+   if [[ -n "$exec_name" && -f ${bins_dir}/${exec_name} ]]; then
+      echo "[enabled]"
+   fi
+}
 
-pkg_id="$1"; shift
-sub_cmd="$1"; shift
+pkg_id="$1"
+if [[ -n "$pkg_id" ]]; then
+   shift
+fi
+sub_cmd="$1"
+if [[ -n "$sub_cmd" ]]; then
+   shift
+fi
 
 cache_old=${cache_dir}/${pkg_id}.old
 installed_dir=${apps_dir}/${pkg_id}
@@ -322,5 +356,11 @@ case "$sub_cmd" in
       ;;
    launch)
       launch_pkg "$@"
+      ;;
+   is_installed)
+      is_installed
+      ;;
+   is_enabled)
+      is_enabled
       ;;
 esac

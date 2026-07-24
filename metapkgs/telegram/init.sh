@@ -29,3 +29,11 @@ post_enable() {
    echo "==> it will create desktop entry automatically"
    echo "==> next time you could start from desktop entry"
 }
+
+is_enabled() {
+   local entry_dir=~/.local/share/applications
+   local entry_file=$(find $entry_dir -mindepth 1 -maxdepth 1 -type f -name "org.telegram*.desktop" | head -n 1)
+   if [[ -n "$entry_file" ]]; then
+      echo "[enabled]"
+   fi
+}

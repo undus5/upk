@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 data_dir=~/upk.d
 if [[ ! -d ${data_dir} ]]; then
    mkdir -p ${data_dir}
@@ -59,6 +57,11 @@ test_var() {
 }
 # replace '/home/*' with '~' in path for display
 tilde_path() { echo "$1" | sed "s#$(realpath ~)#~#"; }
+
+# import $UPK_METAPKG_DIR
+if [[ -f ${data_dir}/env.sh ]]; then
+   source ${data_dir}/env.sh
+fi
 
 get_local_ver() {
    if [[ -n "$1" ]]; then

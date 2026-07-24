@@ -14,9 +14,15 @@ post_enable() {
 }
 
 post_disable() {
-   local f=${bins_dir}/${exec_name}
-   if [[ -f $f ]]; then
-      rm -f $f
-      echo "==> removed '$(tilde_path $f)'"
+   post_disable_cli
+}
+
+is_installed() {
+   if command -v aria2c &>/dev/null; then
+      echo "[installed]"
    fi
+}
+
+is_enabled() {
+   is_enabled_cli
 }

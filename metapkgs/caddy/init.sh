@@ -36,9 +36,9 @@ post_enable() {
 }
 
 post_disable() {
-   local f=${bins_dir}/${exec_name}
-   if [[ -f $f ]]; then
-      rm -f $f
-      echo "==> removed '$(tilde_path $f)'"
-   fi
+   post_disable_cli
+}
+
+is_enabled() {
+   is_enabled_cli
 }

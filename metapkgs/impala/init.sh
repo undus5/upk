@@ -1,5 +1,7 @@
 #!/bin/bash
 
+exec_name="$pkg_id"
+
 install_pkg() {
    local repo="pythops/impala"
    local filename_tpl="impala-x86_64-unknown-linux-musl"
@@ -28,9 +30,9 @@ post_enable() {
 }
 
 post_disable() {
-   local l=${bins_dir}/${pkg_id}
-   if [[ -L $l ]]; then
-      rm -f $l
-      echo "==> removed '$(tilde_path $l)'"
-   fi
+   post_disable_cli
+}
+
+is_enabled() {
+   is_enabled_cli
 }

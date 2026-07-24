@@ -1,5 +1,7 @@
 #!/bin/bash
 
+exec_name="$pkg_id"
+
 install_pkg() {
    local repo="jesseduffield/lazygit"
    local filename_tpl="lazygit_${ver_holder}_linux_x86_64.tar.gz"
@@ -29,9 +31,9 @@ post_enable() {
 }
 
 post_disable() {
-   local l=${bins_dir}/${pkg_id}
-   if [[ -L $l ]]; then
-      rm -f $l
-      echo "==> removed '$(tilde_path $l)'"
-   fi
+   post_disable_cli
+}
+
+is_enabled() {
+   is_enabled_cli
 }
