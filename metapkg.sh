@@ -35,11 +35,6 @@ is_enabled() {
       echo "[enabled]"
    fi
 }
-is_enabled_cli() {
-   if [[ -n "$exec_name" && -f ${bins_dir}/${exec_name} ]]; then
-      echo "[enabled]"
-   fi
-}
 
 pkg_id="$1"
 if [[ -n "$pkg_id" ]]; then
