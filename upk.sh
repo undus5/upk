@@ -47,7 +47,9 @@ list_metapkgs() {
 
 clean_cache() {
    test_var cache_dir $cache_dir
-   [[ -d "${cache_dir}" ]] || errf "directory not found: ${cache_dir}"
+   if [[ ! -d $cache_dir ]]; then
+      errf "directory not found: ${cache_dir}"
+   fi
    if [[ "$1" == old ]]; then
       rm -rf ${cache_dir}/*.old
       echo "==> cleaned $(tilde_path $cache_dir)/*.old"
@@ -72,7 +74,9 @@ get_confirmation() {
    else
       confirmation=y
    fi
-   [[ "${confirmation}" =~ ^[yY]$ ]] || exit 1
+   if [[ ! "$confirmation" =~ ^[yY]$ ]]; then
+      exit 1
+   fi
 }
 
 update_installed() {
@@ -99,7 +103,9 @@ update_installed() {
    local metapkg_dir
    for pkg_id in "${pkg_ids[@]}"; do
       metapkg_dir=$(get_metapkg_dir $pkg_id)
-      [[ -n "$metapkg_dir" ]] || errf "metapkg not found: $pkg_id"
+      if [[ -z "$metapkg_dir" ]]; then
+         errf "metapkg not found: $pkg_id"
+      fi
       ${proj_dir}/metapkg.sh $pkg_id update "$@"
    done
 }
@@ -130,7 +136,9 @@ case "$sub_cmd" in
             skip_confirm="-y"
          else
             metapkg_dir=$(get_metapkg_dir $pkg_id)
-            [[ -n "$metapkg_dir" ]] || errf "metapkg not found: $pkg_id"
+            if [[ -z "$metapkg_dir" ]]; then
+               errf "metapkg not found: $pkg_id"
+            fi
             pkg_ids+=("$arg")
          fi
       done
@@ -143,7 +151,9 @@ case "$sub_cmd" in
    launch)
       pkg_id=${1%/}; shift
       metapkg_dir=$(get_metapkg_dir $pkg_id)
-      [[ -n "$metapkg_dir" ]] || errf "metapkg not found: $pkg_id"
+      if [[ -z "$metapkg_dir" ]]; then
+         errf "metapkg not found: $pkg_id"
+      fi
       ${proj_dir}/metapkg.sh $pkg_id $sub_cmd "$@"
       ;;
    list)

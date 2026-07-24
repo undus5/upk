@@ -17,7 +17,9 @@ start_service() {
 
 stop_service() {
    local PID=$(pidof $PROC_NAME)
-   [[ -z "$PID" ]] || echo "$PID" | xargs kill -9 &>/dev/null
+   if [[ -n "$PID" ]]; then
+      echo "$PID" | xargs kill -9 &>/dev/null
+   fi
 }
 
 case ${1} in

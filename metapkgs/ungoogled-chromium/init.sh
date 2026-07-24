@@ -38,7 +38,9 @@ fetch_release_ver() {
 compare_vers() {
    local remote_ver="$1"
    local ver_pattern="^[0-9]+(.[0-9]+){3}-[0-9]+(.[0-9]+)*$"
-   [[ "$remote_ver" =~ $ver_pattern ]] || errf "==> invalid remote_ver"
+   if [[ ! "$remote_ver" =~ $ver_pattern ]]; then
+      errf "==> invalid remote_ver"
+   fi
    local local_ver="$2"
    local result=""
    local rver1=
@@ -52,7 +54,9 @@ compare_vers() {
    if [[ -z "$local_ver" ]]; then
       result=$remote_ver
    else
-      [[ "$local_ver" =~ $ver_pattern ]] || errf "==> invalid local_ver"
+      if [[ ! "$local_ver" =~ $ver_pattern ]]; then
+         errf "==> invalid local_ver"
+      fi
       # version example: 148.0.7778.215-1
       IFS="-" read -r rver1 rver2 <<< "$remote_ver"
       IFS="." read -r -a rvers <<< "$rver1"

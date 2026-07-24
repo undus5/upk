@@ -3,7 +3,9 @@
 set -e
 
 data_dir=~/upk.d
-[[ -d ${data_dir} ]] || mkdir -p ${data_dir}
+if [[ ! -d ${data_dir} ]]; then
+   mkdir -p ${data_dir}
+fi
 
 apps_dir=$data_dir/apps
 bins_dir=$data_dir/bins
@@ -11,21 +13,37 @@ vers_dir=$data_dir/vers
 cache_dir=$data_dir/cache
 runs_dir=$data_dir/runs
 
-[[ -d $apps_dir ]] || mkdir -p $apps_dir
-[[ -d $bins_dir ]] || mkdir -p $bins_dir
-[[ -d $vers_dir ]] || mkdir -p $vers_dir
-[[ -d $cache_dir ]] || mkdir -p $cache_dir
-[[ -d $runs_dir ]] || mkdir -p $runs_dir
+if [[ ! -d $apps_dir ]]; then
+   mkdir -p $apps_dir
+fi
+if [[ ! -d $bins_dir ]]; then
+   mkdir -p $bins_dir
+fi
+if [[ ! -d $vers_dir ]]; then
+   mkdir -p $vers_dir
+fi
+if [[ ! -d $cache_dir ]]; then
+   mkdir -p $cache_dir
+fi
+if [[ ! -d $runs_dir ]]; then
+   mkdir -p $runs_dir
+fi
 
 entries_dir=~/.local/share/applications
 icons_dir=~/.icons
 
-[[ -d $entries_dir ]] || mkdir -p $entries_dir
-[[ -d $icons_dir ]] || mkdir -p $icons_dir
+if [[ ! -d $entries_dir ]]; then
+   mkdir -p $entries_dir
+fi
+if [[ ! -d $icons_dir ]]; then
+   mkdir -p $icons_dir
+fi
 
 fonts_dir=~/.local/share/fonts
 
-[[ -d $fonts_dir ]] || mkdir -p $fonts_dir
+if [[ ! -d $fonts_dir ]]; then
+   mkdir -p $fonts_dir
+fi
 
 ver_holder="_VERSION_"
 exec_holder="_EXEC_"
@@ -34,7 +52,11 @@ exec_holder="_EXEC_"
 errf() { printf "$@\n" >&2; exit 1; }
 rtnf() { printf "$@\n"; exit 0; }
 test_cmd() { command -v $1 &>/dev/null || errf "command not found: $@"; }
-test_var() { [[ -n "$2" ]] || errf "undefined var: $1"; }
+test_var() {
+   if [[ -z "$2" ]]; then
+      errf "undefined var: $1"
+   fi
+}
 # replace '/home/*' with '~' in path for display
 tilde_path() { echo "$1" | sed "s#$(realpath ~)#~#"; }
 

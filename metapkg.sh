@@ -18,7 +18,9 @@ installed_dir=${apps_dir}/${pkg_id}
 # exec_path=${installed_dir}/...
 
 metapkg_dir=$(get_metapkg_dir $pkg_id)
-[[ -n "$metapkg_dir" ]] || errf "==> metapkg not found: $pkg_id"
+if [[ -z "$metapkg_dir" ]]; then
+   errf "==> metapkg not found: $pkg_id"
+fi
 source ${metapkg_dir}/init.sh
 
 ################################################################################
@@ -36,8 +38,12 @@ jq_dl_url_filter() {
 fetch_release_ver_url() {
    local repo="$1"
    local filename_tpl="$2"
-   [[ -n "$repo" ]] || errf "==> undefined var: repo"
-   [[ -n "$filename_tpl" ]] || errf "==> undefined var: filename_tpl"
+   if [[ -z "$repo" ]]; then
+      errf "==> undefined var: repo"
+   fi
+   if [[ -z "$filename_tpl" ]]; then
+      errf "==> undefined var: filename_tpl"
+   fi
    local json_tmpfile=$(mktemp)
    local api_url="https://api.github.com/repos/${repo}/releases/latest"
    test_cmd curl; test_cmd jq
@@ -117,7 +123,9 @@ install_release_appimage() {
 compare_dot_vers() {
    local remote_ver="$1"
    local ver_pattern="^[0-9]+(.[0-9]+)*$"
-   [[ "$remote_ver" =~ $ver_pattern ]] || errf "==> invalid remote_ver"
+   if [[ ! "$remote_ver" =~ $ver_pattern ]]; then
+      errf "==> invalid remote_ver"
+   fi
    local local_ver="$2"
    local result=""
    local rvers=
@@ -127,7 +135,9 @@ compare_dot_vers() {
    if [[ -z "$local_ver" ]]; then
       result=$remote_ver
    else
-      [[ "$local_ver" =~ $ver_pattern ]] || errf "==> invalid local_ver"
+      if [[ ! "$local_ver" =~ $ver_pattern ]]; then
+         errf "==> invalid local_ver"
+      fi
       IFS="." read -r -a rvers <<< "$remote_ver"
       IFS="." read -r -a lvers <<< "$local_ver"
       for i in "${!rvers[@]}"; do
@@ -145,7 +155,9 @@ compare_dot_vers() {
 # return latest "commit_date,commit_sha"
 fetch_commit_date_sha() {
    local repo="$1"
-   [[ -n "$repo" ]] || errf "==> undefined var: repo"
+   if [[ -z "$repo" ]]; then
+      errf "==> undefined var: repo"
+   fi
    local api_url="https://api.github.com/repos/${repo}/commits"
    test_cmd curl; test_cmd jq
    curl -sL $api_url | jq -r '.[0]|"\(.commit.author.date),\(.sha)"'
@@ -177,7 +189,9 @@ test_commit_date_sha() {
 compare_date_vers() {
    local remote_date="$1"
    local local_date="$2"
-   [[ -n "$remote_ver" ]] || errf "undefined var: ${remote_date}"
+   if [[ -z "$remote_ver" ]]; then
+      errf "undefined var: ${remote_date}"
+   fi
    local remote_ts=
    local local_ts=
    if [[ -z "$local_date" ]]; then
@@ -267,7 +281,9 @@ unlock_ver() {
 
 launch_pkg() {
    test_var exec_path $exec_path
-   [[ -x $exec_path ]] || errf "==> not executable : $exec_path"
+   if [[ ! -x $exec_path ]]; then
+      errf "==> not executable : $exec_path"
+   fi
    $exec_path "$@"
 }
 

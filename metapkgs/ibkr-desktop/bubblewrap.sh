@@ -11,7 +11,9 @@ if [[ -z "$sandbox_dir" || -z "$exec_path" ]]; then
    get_help
    exit 1
 fi
-[[ -d "$sandbox_dir" ]] || errf "directory not found: ${sandbox_dir}"
+if [[ ! -d "$sandbox_dir" ]]; then
+   errf "directory not found: ${sandbox_dir}"
+fi
 
 binds_or_links=""
 if [[ -L /bin ]]; then
