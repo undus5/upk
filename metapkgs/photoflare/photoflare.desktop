@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=LocalSend
-Icon=localsend
+Name=Photoflare
+Icon=photoflare
 Exec=_EXEC_
 Terminal=false
 Type=Application

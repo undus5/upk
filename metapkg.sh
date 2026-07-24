@@ -25,10 +25,11 @@ source ${metapkg_dir}/init.sh
 
 ################################################################################
 
-jq_dl_url_filter() {
-   local filename="$1"
-   test_var filename $filename
-   local filter=".assets|map(select(.name==\"${filename}\")).[0]"
+jq_dl_filter() {
+   local filename_tpl="$1"
+   local ver="$2"
+   local regex=${filename_tpl/${ver_holder}/${ver}\\\\S*}
+   local filter=".assets|map(select(.name|test(\"${regex}\";\"n\"))).[0]"
    filter+=".browser_download_url"
    echo $filter
 }
@@ -49,8 +50,7 @@ fetch_release_ver_url() {
    test_cmd curl; test_cmd jq
    curl -sL $api_url > $json_tmpfile
    local ver=$(cat $json_tmpfile | jq -r '.tag_name|ltrimstr("v")')
-   local filename=${filename_tpl/$ver_holder/$ver}
-   local url=$(cat $json_tmpfile | jq -r "$(jq_dl_url_filter $filename)")
+   local url=$(cat $json_tmpfile | jq -r "$(jq_dl_filter $filename_tpl $ver)")
    echo "${ver},${url}"
    rm -f $json_tmpfile
 }
