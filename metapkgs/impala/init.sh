@@ -28,11 +28,3 @@ post_enable() {
    ln -sf ${installed_dir}/${pkg_id} ${bins_dir}/
    echo "==> linked '$(tilde_path ${bins_dir}/${pkg_id})'"
 }
-
-post_disable() {
-   post_disable_cli
-}
-
-is_enabled() {
-   is_enabled_cli
-}

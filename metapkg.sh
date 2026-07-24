@@ -8,9 +8,19 @@ source ${proj_dir}/header.sh
 
 install_pkg() { return; }
 post_enable() { return; }
-post_disable() { return; }
+post_disable() {
+   if [[ -n "$exec_name" ]]; then
+      local f=${bins_dir}/${exec_name}
+      if [[ -f $f ]]; then
+         rm -f $f
+         echo "==> removed '$(tilde_path $f)'"
+      fi
+   fi
+}
 is_installed() {
    if [[ -f ${vers_dir}/${pkg_id}.txt ]]; then
+      echo "[installed]"
+   elif [[ -x $exec_path ]]; then
       echo "[installed]"
    fi
 }
@@ -21,15 +31,8 @@ is_enabled() {
       if [[ -n "$filename" && -f ~/.local/share/applications/${filename} ]]; then
          echo "[enabled]"
       fi
-   fi
-}
-post_disable_cli() {
-   if [[ -n "$exec_name" ]]; then
-      local f=${bins_dir}/${exec_name}
-      if [[ -f $f ]]; then
-         rm -f $f
-         echo "==> removed '$(tilde_path $f)'"
-      fi
+   elif [[ -n "$exec_name" && -f ${bins_dir}/${exec_name} ]]; then
+      echo "[enabled]"
    fi
 }
 is_enabled_cli() {

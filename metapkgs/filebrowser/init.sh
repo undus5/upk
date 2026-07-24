@@ -34,11 +34,3 @@ post_enable() {
    ln -sf ../apps/${pkg_id}/${exec_name} ${bins_dir}/
    echo "==> installed '$(tilde_path ${bins_dir}/${exec_name})'"
 }
-
-post_disable() {
-   post_disable_cli
-}
-
-is_enabled() {
-   is_enabled_cli
-}

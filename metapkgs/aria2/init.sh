@@ -13,16 +13,8 @@ post_enable() {
    echo "==> installed '$(tilde_path ${bins_dir}/${exec_name})'"
 }
 
-post_disable() {
-   post_disable_cli
-}
-
 is_installed() {
    if command -v aria2c &>/dev/null; then
       echo "[installed]"
    fi
-}
-
-is_enabled() {
-   is_enabled_cli
 }
