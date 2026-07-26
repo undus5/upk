@@ -1,7 +1,7 @@
 #!/bin/bash
 
-exec_path=${installed_dir}/launch.sh
-exec_cli=ventoy-cli.sh
+exec_path=${installed_dir}/ventoy-gui.sh
+cli_name=ventoy-cli.sh
 
 install_pkg() {
    local repo="ventoy/Ventoy"
@@ -23,18 +23,9 @@ install_pkg() {
    mv $unpack_dir $installed_dir
    echo "==> installed '$(tilde_path $installed_dir)'"
    write_ver "$remote_ver"
-}
 
-post_enable() {
    cp -f ${metapkg_dir}/launch.sh ${installed_dir}/
    echo "==> installed '$(tilde_path ${installed_dir}/launch.sh)'"
-   cp -f ${metapkg_dir}/${exec_cli} ${bins_dir}/
-   echo "==> installed '$(tilde_path ${bins_dir}/${exec_cli})'"
-}
-
-post_disable() {
-   if [[ -f "${bins_dir}/${exec_cli}" ]]; then
-      rm -f ${bins_dir}/${exec_cli}.sh
-      echo "==> removed '$(tilde_path ${bins_dir})/${exec_cli}'"
-   fi
+   cp -f ${metapkg_dir}/${cli_name} ${bins_dir}/
+   echo "==> installed '$(tilde_path ${bins_dir}/${cli_name})'"
 }
