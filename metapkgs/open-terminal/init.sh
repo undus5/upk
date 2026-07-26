@@ -1,12 +1,11 @@
 #!/bin/bash
 
-exec_name=open-terminal-here.sh
-exec_path=${installed_dir}/${exec_name}
-xdg_exec=${bins_dir}/xdg-terminal-exec
+cli_name=open-terminal-here.sh
+xdg_cli=${bins_dir}/xdg-terminal-exec
 
 install_pkg() {
    test_var installed_dir $installed_dir
-   test_var exec_name $exec_name
+   test_var cli_name $cli_name
 
    local local_ver=$(get_local_ver)
    if [[ "$local_ver" == "locked" ]]; then
@@ -15,19 +14,18 @@ install_pkg() {
 
    mkdir -p $installed_dir
    self_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
-   cp -f ${self_dir}/${exec_name} ${installed_dir}/
-   echo "==> installed '$(tilde_path ${installed_dir})/${exec_name}'"
+   cp -f ${metapkg_dir}/${cli_name} ${installed_dir}/
+   echo "==> installed '$(tilde_path ${installed_dir})/${cli_name}'"
    lock_ver
 }
 
-post_enable() {
-   ln -sf ../apps/${pkg_id}/${exec_name} $xdg_exec
-   echo "==> installed '$(tilde_path $xdg_exec)'"
-}
-
 post_disable() {
-   if [[ -L $xdg_exec ]]; then
-      rm -f $xdg_exec
-      echo "==> removed '$(tilde_path $xdg_exec)'"
+   if [[ -e $cli_name ]]; then
+      rm -f $cli_name
+      echo "==> removed '$(tilde_path ${bins_dir}/${cli_name})'"
+   fi
+   if [[ -e $xdg_cli ]]; then
+      rm -f $xdg_cli
+      echo "==> removed '$(tilde_path $xdg_cli)'"
    fi
 }

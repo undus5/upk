@@ -1,6 +1,6 @@
 #!/bin/bash
 
-exec_name="caddy.sh"
+cli_name="caddy.sh"
 
 install_pkg() {
    local repo="caddyserver/caddy"
@@ -25,12 +25,7 @@ install_pkg() {
    tar xf $save_path -C $unpack_dir
    mv $unpack_dir $installed_dir
    echo "==> installed '$(tilde_path $installed_dir)'"
+   cp -f ${metapkg_dir}/${cli_name} ${installed_dir}/
+   echo "==> installed '$(tilde_path ${installed_dir}/${cli_name})'"
    write_ver "$remote_ver"
-}
-
-post_enable() {
-   cp -f ${metapkg_dir}/${exec_name} ${installed_dir}/
-   echo "==> installed '$(tilde_path ${installed_dir}/${exec_name})'"
-   ln -sf ../apps/${pkg_id}/${exec_name} ${bins_dir}/
-   echo "==> installed '$(tilde_path ${bins_dir}/${exec_name})'"
 }

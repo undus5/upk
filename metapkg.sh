@@ -7,16 +7,24 @@ source ${proj_dir}/header.sh
 ################################################################################
 
 install_pkg() { return; }
-post_enable() { return; }
+
+post_enable() {
+   if [[ -n "$cli_name" ]]; then
+      ln -sf ../apps/${pkg_id}/${cli_name} $bins_dir
+      echo "==> linked '$(tilde_path ${bins_dir}/${cli_name})'"
+   fi
+}
+
 post_disable() {
-   if [[ -n "$exec_name" ]]; then
-      local f=${bins_dir}/${exec_name}
+   if [[ -n "$cli_name" ]]; then
+      local f=${bins_dir}/${cli_name}
       if [[ -f $f ]]; then
          rm -f $f
          echo "==> removed '$(tilde_path $f)'"
       fi
    fi
 }
+
 is_installed() {
    if [[ -f ${vers_dir}/${pkg_id}.txt ]]; then
       echo "[installed]"
@@ -24,6 +32,7 @@ is_installed() {
       echo "[installed]"
    fi
 }
+
 is_enabled() {
    local entry_file=$(find $metapkg_dir -mindepth 1 -maxdepth 1 -type f -name "*.desktop" | head -n 1)
    if [[ -f $entry_file ]]; then
@@ -31,7 +40,7 @@ is_enabled() {
       if [[ -n "$filename" && -f ~/.local/share/applications/${filename} ]]; then
          echo "[enabled]"
       fi
-   elif [[ -n "$exec_name" && -f ${bins_dir}/${exec_name} ]]; then
+   elif [[ -n "$cli_name" && -f ${bins_dir}/${cli_name} ]]; then
       echo "[enabled]"
    fi
 }

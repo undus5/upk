@@ -1,6 +1,6 @@
 #!/bin/bash
 
-exec_name="$pkg_id"
+cli_name="$pkg_id"
 
 install_pkg() {
    local repo="jesseduffield/lazygit"
@@ -23,9 +23,4 @@ install_pkg() {
    mv $unpack_dir $installed_dir
    echo "==> installed '$(tilde_path $installed_dir)'"
    write_ver "$remote_ver"
-}
-
-post_enable() {
-   ln -sf ${installed_dir}/${pkg_id} ${bins_dir}/
-   echo "==> linked '$(tilde_path ${bins_dir}/${pkg_id})'"
 }
