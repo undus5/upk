@@ -16,8 +16,3 @@ install_pkg() {
    printf "==> 6. run 'udevadm control --reload-rules' and 'udevadm trigger'\n"
    exit 0   # prevent enable_entry(), post_enable()
 }
-
-post_enable() {
-   ln -sf ../apps/${pkg_id}/${pkg_id}.AppImage ${bins_dir}/${cli_name}
-   echo "==> linked '$(tilde_path ${bins_dir}/${cli_name})'"
-}
