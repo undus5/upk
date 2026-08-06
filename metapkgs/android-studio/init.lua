@@ -15,6 +15,10 @@ desc = [[
 desc = string.format(desc, tilde_path(exec_path))
 
 function m.install ()
+   local lversion = local_version(pkg_id)
+   if lversion and lversion == "locked" then
+      return false
+   end
    io.write(desc)
 end
 

@@ -49,11 +49,10 @@ function exists_or_mkdir (path)
 end
 
 function assert_cmd (cmd)
-   local ok
    if not cmd then
       return false
    end
-   ok = os.execute(string.format("command -v %s &>/dev/null", cmd))
+   local ok = os.execute(string.format("command -v %s &>/dev/null", cmd))
    if not ok then
       io.stderr:write(string.format("command not found: \n", cmd))
       os.exit(1)
@@ -121,10 +120,10 @@ xyz_mark = ":XYZ:"
 package.path = proj_dir .. "/?.lua;" .. package.path
 
 function load_metapkg (pkg_id)
-   local path, mod_global_table, mod_env
    if package.loaded[pkg_id] then
       return package.loaded[pkg_id]
    end
+   local path, mod_global_table, mod_env
    path = string.format("%s/%s/init.lua", metapkg_dir, pkg_id)
    if not file_exists(path) then
       io.stderr:write(string.format("metapkg not found: %s\n", pkg_id))
@@ -143,22 +142,22 @@ end
 --------------------------------------------------------------------------------
 
 function download_github_release (pkg_id, filename_pattern, github_repo, api_url)
-   local file_ext, json_table, download_url
-   local remote_version, remote_xyz, lversion, local_xyz, outdated
-   local filename, save_path, ok
-   file_ext = ""
-   file_ext = filename_pattern:match("%.zip") or file_ext
-   file_ext = filename_pattern:match("%.tar%.%l+") or file_ext
-   file_ext = filename_pattern:match("%.AppImage") or file_ext
    filename_pattern = filename_pattern:gsub(xyz_mark, "%%g+")
    filename_pattern = filename_pattern:gsub("([%-%.])", "%%%1")
 
-   outdated, remote_version, json_table = fetch_github_release(pkg_id, github_repo, api_url)
+   local file_ext = ""
+   file_ext = filename_pattern:match("%.zip") or file_ext
+   file_ext = filename_pattern:match("%.tar%.%l+") or file_ext
+   file_ext = filename_pattern:match("%.AppImage") or file_ext
 
+   local outdated, remote_version, json_table = fetch_github_release(
+      pkg_id, github_repo, api_url
+   )
    if not outdated then
       return false
    end
 
+   local download_url
    for _, a in ipairs(json_table.assets) do
       if a.name:match(filename_pattern) then
          download_url = a.browser_download_url
@@ -166,21 +165,20 @@ function download_github_release (pkg_id, filename_pattern, github_repo, api_url
       end
    end
 
-   filename = string.format("%s-%s%s", pkg_id, remote_version, file_ext)
-   save_path = download_file(pkg_id, filename, download_url)
+   local filename = string.format("%s-%s%s", pkg_id, remote_version, file_ext)
+   local save_path = download_file(pkg_id, filename, download_url)
 
    return save_path, remote_version
 end
 
 function fetch_github_release (pkg_id, github_repo, api_url)
-   local url, cmdl, f, json, json_table
-   local remote_version, lversion, outdated
-
-   url = "https://api.github.com/repos/%s/releases/latest"
+   local url = "https://api.github.com/repos/%s/releases/latest"
    url = string.format(url, github_repo)
    url = api_url or url
 
-   lversion = local_version(pkg_id)
+   local outdated = false
+
+   local lversion = local_version(pkg_id)
    if lversion == "locked" then
       outdated = false
       return outdated, remote_version, json_table
@@ -189,14 +187,15 @@ function fetch_github_release (pkg_id, github_repo, api_url)
    io.write(string.format("[%s] fetching release info ... ", pkg_id))
 
    -- https://github.com/rxi/json.lua
-   json = require("json")
+   local json = require("json")
+   local json_table = {}
 
-   cmdl = github_curl_cmdl(url)
-   f = io.popen(cmdl)
+   local cmdl = github_curl_cmdl(url)
+   local f = io.popen(cmdl)
    json_table = json.decode(f:read("a"))
    f:close()
 
-   remote_version = json_table.tag_name:match("[%d%.]+")
+   local remote_version = json_table.tag_name:match("[%d%.]+")
 
    outdated = is_outdated(pkg_id, remote_version)
 
@@ -211,31 +210,30 @@ function fetch_github_release (pkg_id, github_repo, api_url)
 end
 
 function is_outdated (pkg_id, remote_version)
-   local outdated, lversion, remote_xyz, local_xyz
-   outdated = false
-
    if not remote_version then
       io.stderr:write(string.format("[%s] invalid remote_version\n", pkg_id))
       os.exit(1)
    end
 
-   lversion = local_version(pkg_id)
+   local outdated = false
+
+   local lversion = local_version(pkg_id)
    if not lversion then
       outdated = true
       return outdated
    end
 
-   remote_xyz = {}
+   local remote_xyz = {}
    for v in remote_version:gmatch("[^%.]+") do
       table.insert(remote_xyz, tonumber(v))
    end
-   local_xyz = {}
+   local local_xyz = {}
    for v in lversion:gmatch("[^%.]+") do
       table.insert(local_xyz, tonumber(v))
    end
 
    for i, v in ipairs(remote_xyz) do
-      if remote_xyz[i] > local_xyz[i] then
+      if not local_xyz[i] or remote_xyz[i] > local_xyz[i] then
          outdated = true
          break
       end
@@ -246,14 +244,14 @@ end
 
 function github_curl_cmdl (url)
    assert_cmd("curl")
-   local github_token_file, f, token, cmdl
-   github_token_file = home_dir .. "/.ssh/github-token.txt"
-   f = io.open(github_token_file, "r")
+   local token = false
+   local github_token_file = home_dir .. "/.ssh/github-token.txt"
+   local f = io.open(github_token_file, "r")
    if f then
       token = f:read("l")
       f:close()
    end
-   cmdl = "curl -s --header 'X-GitHub-Api-Version: 2026-03-10'"
+   local cmdl = "curl -s --header 'X-GitHub-Api-Version: 2026-03-10'"
    if token then
       cmdl = cmdl .. string.format(" --header 'Authorization: Bearer %s'", token)
    end
@@ -298,16 +296,18 @@ function install_binfile_release (pkg_id, filename_pattern, github_repo, exec_pa
    end
    backup_old_installed(pkg_id)
    local ok = install_binfile(pkg_id, save_path, exec_path)
+   if ok then
+      write_version(pkg_id, remote_version)
+   end
    return ok
 end
 
 function install_binfile (pkg_id, save_path, exec_path)
    local installed_dir = string.format("%s/%s", apps_dir, pkg_id)
-   local cmdl, ok
-   cmdl = string.format("mkdir -p %s;", installed_dir)
+   local cmdl = string.format("mkdir -p %s;", installed_dir)
    cmdl = cmdl .. string.format("chmod u+x %s;", save_path)
    cmdl = cmdl .. string.format("cp -f %s %s;", save_path, exec_path)
-   ok = os.execute(cmdl)
+   local ok = os.execute(cmdl)
    if ok then
       print(string.format("[%s] installed '%s'", pkg_id, tilde_path(installed_dir)))
    end
@@ -323,18 +323,23 @@ function install_tarball_release (pkg_id, github_repo, filename_pattern)
    end
    backup_old_installed(pkg_id)
    local ok = install_tarball(pkg_id, save_path)
+   if ok then
+      write_version(pkg_id, remote_version)
+   end
    return ok
 end
 
 function install_tarball (pkg_id, save_path, type)
    local unpacked_dir = cache_dir .. "/" .. pkg_id
    local installed_dir = string.format("%s/%s", apps_dir, pkg_id)
-   local cmdl, ok, f, sub_dirs, sub_nodes_total, unpack_cmd
-   unpack_cmd = string.format("tar xf %s -C %s;", save_path, unpacked_dir)
+
+   local unpack_cmd = string.format("tar xf %s -C %s;", save_path, unpacked_dir)
    if type == "unzip" then
       assert_cmd("unzip")
       unpack_cmd = string.format("unzip -q %s -d %s;", save_path, unpacked_dir)
    end
+
+   local cmdl, f, ok
    cmdl = string.format("mkdir -p %s;", unpacked_dir) .. unpack_cmd
    ok = os.execute(cmdl)
    if not ok then
@@ -342,7 +347,7 @@ function install_tarball (pkg_id, save_path, type)
       os.exit(1)
    end
    -- check unpacked has wrapping directory or not
-   sub_dirs = {}
+   local sub_dirs = {}
    cmdl = "find " .. unpacked_dir .. " -mindepth 1 -maxdepth 1 -type d"
    f = io.popen(cmdl)
    for d in f:lines() do
@@ -351,7 +356,7 @@ function install_tarball (pkg_id, save_path, type)
    f:close()
    cmdl = "find " .. unpacked_dir .. " -mindepth 1 -maxdepth 1 | wc -l"
    f = io.popen(cmdl)
-   sub_nodes_total = tonumber(f:read("l"))
+   local sub_nodes_total = tonumber(f:read("l"))
    f:close()
    if #sub_dirs == 1 and sub_nodes_total == 1 then
       -- has wrapping directory
@@ -373,10 +378,9 @@ function install_cli_script (pkg_id, cli_name)
    local installed_dir = string.format("%s/%s", apps_dir, pkg_id)
    local cli_path_src = metapkg_dir .. "/" .. pkg_id .. "/" .. cli_name
    local cli_path_dst = installed_dir .. "/" .. cli_name
-   local cmdl, ok
-   cmdl = string.format("mkdir -p %s;", installed_dir)
+   local cmdl = string.format("mkdir -p %s;", installed_dir)
    cmdl = cmdl .. string.format("cp -f %s %s;", cli_path_src, cli_path_dst)
-   ok = os.execute(cmdl)
+   local ok = os.execute(cmdl)
    if ok then
       print(string.format("[%s] installed '%s'", pkg_id, tilde_path(cli_path_dst)))
    end
@@ -389,10 +393,9 @@ function enable_cli (pkg_id, cli_name)
    end
    local cli_path_rel = string.format("../apps/%s/%s", pkg_id, cli_name)
    local cli_path_link = bins_dir .. "/" .. cli_name
-   local cmdl, ok
-   cmdl = "cd %s; ln -sf %s %s"
+   local cmdl = "cd %s; ln -sf %s %s"
    cmdl = string.format(cmdl, bins_dir, cli_path_rel, cli_path_link)
-   ok = os.execute(cmdl)
+   local ok = os.execute(cmdl)
    if ok then
       print(string.format("[%s] symlinked '%s'", pkg_id, tilde_path(cli_path_link)))
    end
@@ -420,16 +423,15 @@ end
 
 function remove (pkg_id, installed_dir)
    local installed_dir = installed_dir or string.format("%s/%s", apps_dir, pkg_id)
-   local ok, version_file
    if dir_exists(installed_dir) then
       ok = os.execute("rm -rf " .. installed_dir)
       if ok then
          print(string.format("[%s] removed '%s'", pkg_id, tilde_path(installed_dir)))
       end
    end
-   version_file = string.format("%s/%s.txt", vers_dir, pkg_id)
+   local version_file = string.format("%s/%s.txt", vers_dir, pkg_id)
    if file_exists(version_file) then
-      ok = os.execute("rm -f " .. version_file)
+      local ok = os.execute("rm -f " .. version_file)
       if ok then
          print(string.format("[%s] removed '%s'", pkg_id, tilde_path(version_file)))
       end
@@ -572,7 +574,7 @@ end
 function metapkg_list ()
    local cmdl, f, pkg_list
    cmdl = "find " .. metapkg_dir .. " -mindepth 1 -maxdepth 1 -type d"
-   cmdl = cmdl .. " -exec basename {} \\;"
+   cmdl = cmdl .. " -exec basename {} \\; | sort"
    f = io.popen(cmdl)
    pkg_list = {}
    for dir_name in f:lines() do
@@ -587,8 +589,7 @@ end
 
 function list_info ()
    local pkg_list = metapkg_list()
-   local strlen, maxlen = 0, 0
-   local suffix
+   local maxlen, strlen = 0, 0
    for _, v in ipairs(pkg_list) do
       strlen = string.len(v.pkg_id)
       if maxlen < strlen then
@@ -598,7 +599,7 @@ function list_info ()
    local column_fmt = "%-" .. maxlen .. "s"
    for _, v in ipairs(pkg_list) do
       io.write(string.format(column_fmt, v.pkg_id))
-      suffix = "\n"
+      local suffix = "\n"
       if v.version then
          suffix = "   [installed]\n"
       end
@@ -657,7 +658,7 @@ if cmds[sub_cmd] then
             table.insert(pkg_ids, v.pkg_id)
             str = ", " .. v.pkg_id
             if i == 1 then
-               str = v._pkg_id
+               str = v.pkg_id
             end
             pkg_ids_inline = pkg_ids_inline .. str
          end

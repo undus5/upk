@@ -8,7 +8,6 @@ function m.install ()
    local filename_pattern = string.format("halloy-%s-x86_64-linux.tar.gz", xyz_mark)
    local ok = install_tarball_release(pkg_id, github_repo, filename_pattern)
    if ok then
-      write_version(pkg_id, remote_version)
       m.enable()
    end
 end

@@ -10,7 +10,6 @@ function m.install ()
    filename_pattern = string.format(filename_pattern, xyz_mark)
    local ok = install_tarball_release(pkg_id, github_repo, filename_pattern)
    if ok then
-      write_version(pkg_id, remote_version)
       m.enable()
    end
 end
