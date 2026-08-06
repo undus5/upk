@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Zed
 Icon=zed
-Exec=_EXEC_ %U
+Exec= %U
 Type=Application
 StartupNotify=true
 Categories=Utility;TextEditor;Development;IDE;

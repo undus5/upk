@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=PeaZip Unpack Smart
 Icon=peazip-unpack
-Exec=_EXEC_ -ext2folder %F
+Exec= -ext2folder %F
 Terminal=false
 Type=Application
 Categories=Utility;Archiving;Compression;

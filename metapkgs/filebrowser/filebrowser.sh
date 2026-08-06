@@ -1,35 +1,31 @@
 #!/usr/bin/bash
 
-if [[ -e ~/upk.d/env.sh ]]; then
-   source ~/upk.d/env.sh
+proc_name="filebrowser"
+default_port=8586
+port=${FILEBROWSER_port:-$default_port}
+public_dir=${FILEBROWSER_public_dir:-~/Public}
+runtime_dir=${FILEBROWSER_runtime_dir:-~/upk.d/runs/${proc_name}}
+db_file=${runtime_dir}/${proc_name}.db
+
+self_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
+installed_dir=$self_dir
+exec_path=${installed_dir}/${proc_name}
+
+if [[ ! -d $runtime_dir ]]; then
+   mkdir -p $runtime_dir
 fi
 
-PROC_NAME="filebrowser"
-DEFAULT_PORT=8586
-PORT=${FILEBROWSER_PORT:-$DEFAULT_PORT}
-PUBLIC_DIR=${FILEBROWSER_PUBLIC_DIR:-~/Public}
-RUNTIME_DIR=${FILEBROWSER_RUNTIME_DIR:-~/upk.d/runs/${PROC_NAME}}
-DB_FILE=${RUNTIME_DIR}/${PROC_NAME}.db
-
-SELF_DIR=$(dirname $(realpath ${BASH_SOURCE[0]}))
-INSTALLED_DIR=$SELF_DIR
-EXEC_PATH=${INSTALLED_DIR}/${PROC_NAME}
-
-if [[ ! -d $RUNTIME_DIR ]]; then
-   mkdir -p $RUNTIME_DIR
-fi
-
-if (( PORT < 1024 || PORT > 65535 )); then
-   PORT=$DEFAULT_PORT
+if (( port < 1024 || port > 65535 )); then
+   port=$default_port
 fi
 
 start_service() {
-   if ! pidof $PROC_NAME &>/dev/null; then
-      nohup $EXEC_PATH -d $DB_FILE -p $PORT -r $PUBLIC_DIR &>/dev/null &
+   if ! pidof $proc_name &>/dev/null; then
+      nohup $exec_path -d $db_file -p $port -r $public_dir &>/dev/null &
    fi
 }
 
-stop_service() { pidof $PROC_NAME | xargs kill &>/dev/null; }
+stop_service() { pidof $proc_name | xargs kill &>/dev/null; }
 
 case $1 in
    start)
@@ -43,5 +39,5 @@ case $1 in
       start_service
       ;;
    *)
-      printf "Usage: $(basename $0) <start|stop|reload|restart>\n"
+      printf "usage: $(basename $0) <start|stop|reload|restart>\n"
 esac

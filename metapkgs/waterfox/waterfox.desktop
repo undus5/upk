@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Waterfox
 Icon=waterfox
-Exec=_EXEC_ %U
+Exec= %U
 Terminal=false
 Type=Application
 Categories=Network;WebBrowser;

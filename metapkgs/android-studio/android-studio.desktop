@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Android Studio
-Exec=_EXEC_
+Exec=
 Icon=android-studio
 Terminal=false
 Type=Application

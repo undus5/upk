@@ -2,7 +2,7 @@
 Name=Brave Origin Beta
 Icon=brave-origin-beta
 StartupWMClass=brave-origin
-Exec=_EXEC_ %U
+Exec= %U
 Terminal=false
 Type=Application
 Categories=Network;WebBrowser;

@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=LosslessCut
 Icon=losslesscut
-Exec=_EXEC_
+Exec=
 Terminal=false
 Type=Application
 MimeType=text/plain;

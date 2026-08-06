@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Ventoy
-Exec=_EXEC_
+Exec=
 Icon=ventoy
 Type=Application
 StartupNotify=true

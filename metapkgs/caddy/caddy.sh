@@ -4,33 +4,33 @@ if [[ -e ~/upk.d/env.sh ]]; then
    source ~/upk.d/env.sh
 fi
 
-PROC_NAME="caddy"
-RUNTIME_DIR=${CADDY_RUNTIME_DIR:-~/upk.d/runs/${PROC_NAME}}
-CONF_FILE=${RUNTIME_DIR}/caddyfile
+proc_name="caddy"
+runtime_dir=${CADDY_runtime_dir:-~/upk.d/runs/${proc_name}}
+conf_file=${runtime_dir}/caddyfile
 
-SELF_DIR=$(dirname $(realpath ${BASH_SOURCE[0]}))
-INSTALLED_DIR=$SELF_DIR
-EXEC_PATH=${INSTALLED_DIR}/${PROC_NAME}
+self_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
+installed_dir=$self_dir
+exec_path=${installed_dir}/${proc_name}
 
-if [[ ! -d $RUNTIME_DIR ]]; then
-   mkdir -p $RUNTIME_DIR
+if [[ ! -d $runtime_dir ]]; then
+   mkdir -p $runtime_dir
 fi
 
 start_service() {
-   if ! pidof $PROC_NAME &>/dev/null; then
-      nohup $EXEC_PATH run --environ --config $CONF_FILE &>/dev/null &
+   if ! pidof $proc_name &>/dev/null; then
+      nohup $exec_path run --environ --config $conf_file &>/dev/null &
    fi
 }
 
 reload_service() {
-   if pidof $PROC_NAME &>/dev/null; then
-      $EXEC_PATH reload --config $CONF_FILE --force
+   if pidof $proc_name &>/dev/null; then
+      $exec_path reload --config $conf_file --force
    fi
 }
 
-stop_service() { pidof $PROC_NAME | xargs kill &>/dev/null; }
+stop_service() { pidof $proc_name | xargs kill &>/dev/null; }
 
-trust_certs() { $EXEC_PATH trust; }
+trust_certs() { $exec_path trust; }
 
 case $1 in
    start)
@@ -50,6 +50,6 @@ case $1 in
       trust_certs
       ;;
    *)
-      echo "Usage: $(basename $0) <start|stop|reload|restart|trust>"
-      echo "Permission: setcap 'cap_net_admin,cap_net_bind_service=+ep' caddy"
+      echo "usage: $(basename $0) <start|stop|reload|restart|trust>"
+      echo "permission: setcap 'cap_net_admin,cap_net_bind_service=+ep' caddy"
 esac

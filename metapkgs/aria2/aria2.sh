@@ -1,24 +1,24 @@
 #!/bin/bash
 
-PROC_NAME="aria2c"
+proc_name="aria2c"
 
 start_service() {
-   if pidof $PROC_NAME &>/dev/null; then
+   if pidof $proc_name &>/dev/null; then
       exit 0
    fi
-   local DDIR=$(realpath ~/Downloads)
+   local ddir=$(realpath ~/Downloads)
    # best_aria2, all_aria2, http_aria2, nohttp_aria2
-   local TRACKERS=$(curl -sL "https://cf.trackerslist.com/best_aria2.txt")
-   local EXEC="${PROC_NAME} --enable-rpc=true --rpc-secret=${PROC_NAME}"
-   EXEC+=" --rpc-listen-port=6800 --bt-stop-timeout=3600"
-   EXEC+=" --dir=${DDIR} --bt-tracker=${TRACKERS}"
-   nohup $EXEC &>/dev/null &
+   local trackers=$(curl -sL "https://cf.trackerslist.com/best_aria2.txt")
+   local exec="${proc_name} --enable-rpc=true --rpc-secret=${proc_name}"
+   exec+=" --rpc-listen-port=6800 --bt-stop-timeout=3600"
+   exec+=" --dir=${ddir} --bt-tracker=${trackers}"
+   nohup $exec &>/dev/null &
 }
 
 stop_service() {
-   local PID=$(pidof $PROC_NAME)
-   if [[ -n "$PID" ]]; then
-      echo "$PID" | xargs kill -9 &>/dev/null
+   local pid=$(pidof $proc_name)
+   if [[ -n "$pid" ]]; then
+      echo "$pid" | xargs kill -9 &>/dev/null
    fi
 }
 
@@ -34,6 +34,6 @@ case ${1} in
       start_service
       ;;
    *)
-      echo "Usage: $(basename ${0}) <start|stop|reload|restart>"
+      echo "usage: $(basename ${0}) <start|stop|reload|restart>"
       ;;
 esac

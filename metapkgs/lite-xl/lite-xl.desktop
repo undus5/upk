@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Lite XL
 Icon=lite-xl
-Exec=_EXEC_ %F
+Exec= %F
 Terminal=false
 Type=Application
 MimeType=text/plain;

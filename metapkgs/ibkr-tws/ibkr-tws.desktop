@@ -1,8 +1,8 @@
 #!/usr/bin/env xdg-open
 [Desktop Entry]
 Type=Application
-Name=IBKR Desktop
+Name=IBKR Trader Workstation
 Exec=
-Icon=ibkr-desktop
+Icon=ibkr-tws
 Categories=Application;
-StartupWMClass=install4j-launcher-Main
+StartupWMClass=install4j-jclient-Launcher
