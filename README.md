@@ -14,14 +14,15 @@ Usage: upk.sh <action> [app_id]
    list                             : list available packages
    install|remove <app_id[s]> [-y]  : -y skip confirmation
    update         [app_id[s]] [-y]  : empty app_id means update all
-   enable|disable <app_id>          : enable/disable desktop entry and icon
-   lock           <app_id>          : prevent update and mark installed
+   enable|disable <app_id[s]>       : enable/disable desktop entry and icon
+   lock           <app_id[s]>       : prevent update and mark installed
    clean          [old]             : clean cache
    -h|--help
 ```
 
-To add custom metapkgs, create `~/upk.d/env.sh` with:
+Change directories:
 
 ```
-UPK_METAPKG_DIR=...
+UPK_METAPKG_DIR=~/upkk/metapkgs
+UPK_DATA_DIR=~/upk.dd
 ```
