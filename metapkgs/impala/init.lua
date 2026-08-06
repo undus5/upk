@@ -9,6 +9,7 @@ function m.install ()
    local filename_pattern = string.format("impala-x86_64-unknown-linux-musl", xyz_mark)
    local ok = install_binfile_release(pkg_id, filename_pattern, github_repo, exec_path)
    if ok then
+      write_version(pkg_id, remote_version)
       m.enable()
    end
 end

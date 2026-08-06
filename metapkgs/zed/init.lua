@@ -12,8 +12,8 @@ function m.install ()
    local filename_pattern = string.format("zed-linux-x86_64.tar.gz", xyz_mark)
    local ok = install_tarball_release(pkg_id, github_repo, filename_pattern)
    if ok then
-      m.enable()
       lock(pkg_id)
+      m.enable()
    end
 end
 

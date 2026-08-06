@@ -12,6 +12,7 @@ function m.install ()
       ok = install_cli_script(pkg_id, cli_name)
    end
    if ok then
+      write_version(pkg_id, remote_version)
       m.enable()
    end
 end

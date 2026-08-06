@@ -298,9 +298,6 @@ function install_binfile_release (pkg_id, filename_pattern, github_repo, exec_pa
    end
    backup_old_installed(pkg_id)
    local ok = install_binfile(pkg_id, save_path, exec_path)
-   if ok then
-      write_version(pkg_id, remote_version)
-   end
    return ok
 end
 
@@ -326,9 +323,6 @@ function install_tarball_release (pkg_id, github_repo, filename_pattern)
    end
    backup_old_installed(pkg_id)
    local ok = install_tarball(pkg_id, save_path)
-   if ok then
-      write_version(pkg_id, remote_version)
-   end
    return ok
 end
 
