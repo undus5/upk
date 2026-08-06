@@ -52,6 +52,7 @@ function m.install (channel)
 
    ok = install_tarball(pkg_id, save_path, "unzip")
    if ok then
+      write_version(pkg_id, remote_version)
       m.enable()
    end
 end

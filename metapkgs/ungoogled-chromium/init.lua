@@ -131,6 +131,7 @@ function m.install ()
 
    ok = install_binfile(pkg_id, save_path, exec_path)
    if ok then
+      write_version(pkg_id, remote_version)
       m.enable()
    end
 end
