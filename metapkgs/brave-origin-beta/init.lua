@@ -1,15 +1,22 @@
 m = {}
 
-pkg_id = "brave-origin-beta"
-exec_path = string.format("%s/%s/%s", apps_dir, pkg_id, pkg_id)
+mod = load_metapkg("brave-origin")
+channel = "beta"
 
 function m.install ()
-   local mod = load_metapkg("brave-origin")
-   mod.install("beta")
+   mod.install(channel)
 end
 
 function m.enable ()
-   enable(pkg_id, exec_path)
+   mod.enable(channel)
+end
+
+function m.disable ()
+   mod.disable(channel)
+end
+
+function m.remove ()
+   mod.remove(channel)
 end
 
 return m

@@ -436,6 +436,7 @@ function remove (pkg_id, installed_dir)
          print(string.format("[%s] removed '%s'", pkg_id, tilde_path(version_file)))
       end
    end
+   disable(pkg_id)
 end
 
 function enable (pkg_id, exec_path)

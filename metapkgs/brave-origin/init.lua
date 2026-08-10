@@ -1,11 +1,31 @@
 m = {}
 
-pkg_id = "brave-origin"
-exec_path = string.format("%s/%s/%s", apps_dir, pkg_id, pkg_id)
+channels = { beta = "beta", nightly = "nightly" }
+
+function nil_or_channel (channel)
+   if not channel or channel == "release" then
+      return "release"
+   end
+   if channels[channel] then
+      return channel
+   end
+   io.stderr:write("invalid channel\n")
+   os.exit(1)
+end
+
+function get_pkg_id (channel)
+   local channel = nil_or_channel(channel)
+   local pkg_id_base = "brave-origin"
+   if channel == "release" then
+      return pkg_id_base
+   end
+   return pkg_id_base .. "-" .. channel
+end
 
 function fetch_remote_version (channel)
    assert_cmd("curl")
-   channel = channel or "release"
+   local channel = nil_or_channel(channel)
+   local pkg_id = get_pkg_id(channel)
    local api_url = "https://versions.brave.com/latest"
    api_url = api_url .. string.format("/origin-%s-linux-x64.version", channel)
    local f = io.popen("curl -s " .. api_url)
@@ -15,9 +35,10 @@ function fetch_remote_version (channel)
 end
 
 function m.install (channel)
-   channel = channel or "release"
    local lversion, remote_version, outdated, filename, download_url
    local json_table, save_path, ok
+
+   local pkg_id = get_pkg_id(channel)
 
    lversion = local_version(pkg_id)
    if lversion == "locked" then
@@ -53,12 +74,25 @@ function m.install (channel)
    ok = install_tarball(pkg_id, save_path, "unzip")
    if ok then
       write_version(pkg_id, remote_version)
-      m.enable()
+      m.enable(channel)
    end
 end
 
-function m.enable ()
+function m.enable (channel)
+   local pkg_id = get_pkg_id(channel)
+   local exec_path = string.format("%s/%s/%s", apps_dir, pkg_id, pkg_id)
    enable(pkg_id, exec_path)
+end
+
+function m.remove (channel)
+   local pkg_id = get_pkg_id(channel)
+   remove(pkg_id)
+   m.disable(channel)
+end
+
+function m.disable (channel)
+   local pkg_id = get_pkg_id(channel)
+   disable(pkg_id)
 end
 
 return m
