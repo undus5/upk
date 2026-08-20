@@ -59,7 +59,7 @@ function fetch_remote_version (channel)
    return remote_version
 end
 
-function is_outdated (remote_version)
+function is_local_version_outdated (remote_version)
    local rsplit, lsplit, rvers, lvers = {}, {}, {}, {}
    local lversion = local_version(pkg_id)
    if not lversion then
@@ -106,7 +106,7 @@ function m.install ()
 
    remote_version = fetch_remote_version()
 
-   outdated = is_outdated(remote_version)
+   outdated = is_local_version_outdated(remote_version)
 
    if outdated then
       io.write("outdated\n")
@@ -121,7 +121,7 @@ function m.install ()
    download_url = download_url .. "/releases/download/%s/%s"
    download_url = string.format(download_url, remote_version, filename)
 
-   save_path = download_file(pkg_id, filename, download_url)
+   save_path = download_file(pkg_id, download_url, filename)
 
    if not save_path then
       return false

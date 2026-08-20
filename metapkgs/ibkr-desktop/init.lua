@@ -13,7 +13,7 @@ function m.install ()
    filename = "ntws-latest-standalone-linux-x64.sh"
    download_url = "https://download2.interactivebrokers.com/installers/ntws"
    download_url = download_url .. "/latest-standalone/" .. filename
-   save_path = download_file(pkg_id, filename, download_url)
+   save_path = download_file(pkg_id, download_url, filename)
    backup_old_installed(pkg_id)
 
    unpack_dir = cache_dir .. "/" .. pkg_id

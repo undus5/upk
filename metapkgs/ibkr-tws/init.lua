@@ -13,7 +13,7 @@ function m.install ()
    filename = "tws-latest-linux-x64.sh"
    download_url = "https://download2.interactivebrokers.com/installers/tws"
    download_url = download_url .. "/latest/" .. filename
-   save_path = download_file(pkg_id, filename, download_url)
+   save_path = download_file(pkg_id, download_url, filename)
    backup_old_installed(pkg_id)
 
    unpack_dir = cache_dir .. "/" .. pkg_id

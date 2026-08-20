@@ -17,7 +17,7 @@ function m.install ()
    download_url = "https://cdn.waterfox.com/waterfox/releases/%s/Linux_x86_64/%s"
    download_url = string.format(download_url, remote_version, filename)
 
-   save_path = download_file(pkg_id, filename, download_url)
+   save_path = download_file(pkg_id, download_url, filename)
 
    backup_old_installed(pkg_id)
    ok = install_tarball(pkg_id, save_path)

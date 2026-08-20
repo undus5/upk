@@ -7,9 +7,13 @@ function m.install ()
    local github_repo = "ryanoasis/nerd-fonts"
    local filename_pattern = string.format("JetBrainsMono.tar.xz", xyz_mark)
 
-   local save_path, remote_version = download_github_release(
-      pkg_id, filename_pattern, github_repo
+   local remote_version, download_url, filename = fetch_github_release(
+      pkg_id, github_repo, filename_pattern
    )
+   if not remote_version then
+      return false
+   end
+   local save_path = download_file(pkg_id, download_url, filename)
    if not save_path then
       return false
    end

@@ -7,7 +7,7 @@ exec_path = string.format("%s/%s/%s", apps_dir, pkg_id, pkg_id)
 function m.install ()
    local github_repo = "pythops/impala"
    local filename_pattern = string.format("impala-x86_64-unknown-linux-musl", xyz_mark)
-   local ok = install_binfile_release(pkg_id, filename_pattern, github_repo, exec_path)
+   local ok = install_binfile_release(pkg_id, github_repo, filename_pattern, exec_path)
    if ok then
       m.enable()
    end

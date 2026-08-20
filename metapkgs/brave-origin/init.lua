@@ -48,7 +48,7 @@ function m.install (channel)
    io.write(string.format("[%s] fetching release info ... ", pkg_id))
 
    remote_version = fetch_remote_version(channel)
-   outdated = is_outdated(pkg_id, remote_version)
+   outdated = is_local_version_outdated(pkg_id, remote_version)
 
    if outdated then
       io.write("outdated\n")
@@ -62,13 +62,16 @@ function m.install (channel)
    api_url = "https://api.github.com/repos/brave/brave-browser"
    api_url = api_url .. "/releases/tags/v" .. remote_version
 
-   local save_path, remote_version = download_github_release(
-      pkg_id, filename_pattern, github_repo, api_url
+   local remote_version, download_url, filename = fetch_github_release(
+      pkg_id, github_repo, filename_pattern, api_url
    )
+   if not remote_version then
+      return false
+   end
+   local save_path = download_file(pkg_id, download_url, filename)
    if not save_path then
       return false
    end
-
    backup_old_installed(pkg_id)
 
    ok = install_tarball(pkg_id, save_path, "unzip")

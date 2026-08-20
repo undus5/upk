@@ -141,7 +141,16 @@ end
 -- metapkg installation functions
 --------------------------------------------------------------------------------
 
-function download_github_release (pkg_id, filename_pattern, github_repo, api_url)
+function fetch_github_release (pkg_id, github_repo, filename_pattern, api_url)
+   local lversion = local_version(pkg_id)
+   if lversion == "locked" then
+      return false
+   end
+
+   local url = "https://api.github.com/repos/%s/releases"
+   url = string.format(url, github_repo)
+   url = api_url or url
+
    filename_pattern = filename_pattern:gsub(xyz_mark, "%%g+")
    filename_pattern = filename_pattern:gsub("([%-%.])", "%%%1")
 
@@ -149,40 +158,6 @@ function download_github_release (pkg_id, filename_pattern, github_repo, api_url
    file_ext = filename_pattern:match("%.zip") or file_ext
    file_ext = filename_pattern:match("%.tar%.%l+") or file_ext
    file_ext = filename_pattern:match("%.AppImage") or file_ext
-
-   local outdated, remote_version, json_table = fetch_github_release(
-      pkg_id, github_repo, api_url
-   )
-   if not outdated then
-      return false
-   end
-
-   local download_url
-   for _, a in ipairs(json_table.assets) do
-      if a.name:match(filename_pattern) then
-         download_url = a.browser_download_url
-         break
-      end
-   end
-
-   local filename = string.format("%s-%s%s", pkg_id, remote_version, file_ext)
-   local save_path = download_file(pkg_id, filename, download_url)
-
-   return save_path, remote_version
-end
-
-function fetch_github_release (pkg_id, github_repo, api_url)
-   local url = "https://api.github.com/repos/%s/releases/latest"
-   url = string.format(url, github_repo)
-   url = api_url or url
-
-   local outdated = false
-
-   local lversion = local_version(pkg_id)
-   if lversion == "locked" then
-      outdated = false
-      return outdated, remote_version, json_table
-   end
 
    io.write(string.format("[%s] fetching release info ... ", pkg_id))
 
@@ -195,21 +170,45 @@ function fetch_github_release (pkg_id, github_repo, api_url)
    json_table = json.decode(f:read("a"))
    f:close()
 
-   local remote_version = json_table.tag_name:match("[%d%.]+")
+   local releases
+   if json_table[1] and json_table[1].tag_name then
+      releases = json_table
+   elseif json_table.tag_name then
+      releases = { json_table }
+   end
+   if not releases then
+      return false
+   end
 
-   outdated = is_outdated(pkg_id, remote_version)
+   local download_url, remote_version
+   for _, r in ipairs(releases) do
+      for _, a in ipairs(r.assets) do
+         if a.name:match(filename_pattern) then
+            download_url = a.browser_download_url
+            break
+         end
+      end
+      if download_url then
+         remote_version = r.tag_name:match("[%d%.]+")
+         break
+      end
+   end
 
-   if outdated then
+   local filename = string.format("%s-%s%s", pkg_id, remote_version, file_ext)
+
+   local outdated = is_local_version_outdated(pkg_id, remote_version)
+
+   if outdated and download_url then
       io.write("outdated\n")
-      return outdated, remote_version, json_table
+      return remote_version, download_url, filename
    else
       io.write("up to date\n")
    end
 
-   return outdated, remote_version, json_table
+   return false
 end
 
-function is_outdated (pkg_id, remote_version)
+function is_local_version_outdated (pkg_id, remote_version)
    if not remote_version then
       io.stderr:write(string.format("[%s] invalid remote_version\n", pkg_id))
       os.exit(1)
@@ -258,7 +257,46 @@ function github_curl_cmdl (url)
    return cmdl .. " --url " .. url
 end
 
-function download_file (pkg_id, filename, download_url)
+-- for AppImage and single binary release
+function install_binfile_release (pkg_id, github_repo, filename_pattern, exec_path)
+   local remote_version, download_url, filename = fetch_github_release(
+      pkg_id, github_repo, filename_pattern
+   )
+   if not remote_version then
+      return false
+   end
+   local save_path = download_file(pkg_id, download_url, filename)
+   if not save_path then
+      return false
+   end
+   backup_old_installed(pkg_id)
+   local ok = install_binfile(pkg_id, save_path, exec_path)
+   if ok then
+      write_version(pkg_id, remote_version)
+   end
+   return ok
+end
+
+function install_tarball_release (pkg_id, github_repo, filename_pattern)
+   local remote_version, download_url, filename = fetch_github_release(
+      pkg_id, github_repo, filename_pattern
+   )
+   if not remote_version then
+      return false
+   end
+   local save_path = download_file(pkg_id, download_url, filename)
+   if not save_path then
+      return false
+   end
+   backup_old_installed(pkg_id)
+   local ok = install_tarball(pkg_id, save_path)
+   if ok then
+      write_version(pkg_id, remote_version)
+   end
+   return ok
+end
+
+function download_file (pkg_id, download_url, filename)
    local save_path = cache_dir .. "/" .. filename
    io.write(string.format("[%s] downloading %s ... \n", pkg_id, filename))
    if file_exists(save_path) then
@@ -285,23 +323,6 @@ function backup_old_installed (pkg_id, installed_dir)
    end
 end
 
--- for AppImage and single binary release
-function install_binfile_release (pkg_id, filename_pattern, github_repo, exec_path)
-   local installed_dir = string.format("%s/%s", apps_dir, pkg_id)
-   local save_path, remote_version = download_github_release(
-      pkg_id, filename_pattern, github_repo
-   )
-   if not save_path then
-      return false
-   end
-   backup_old_installed(pkg_id)
-   local ok = install_binfile(pkg_id, save_path, exec_path)
-   if ok then
-      write_version(pkg_id, remote_version)
-   end
-   return ok
-end
-
 function install_binfile (pkg_id, save_path, exec_path)
    local installed_dir = string.format("%s/%s", apps_dir, pkg_id)
    local cmdl = string.format("mkdir -p %s;", installed_dir)
@@ -310,21 +331,6 @@ function install_binfile (pkg_id, save_path, exec_path)
    local ok = os.execute(cmdl)
    if ok then
       print(string.format("[%s] installed '%s'", pkg_id, tilde_path(installed_dir)))
-   end
-   return ok
-end
-
-function install_tarball_release (pkg_id, github_repo, filename_pattern)
-   local save_path, remote_version = download_github_release(
-      pkg_id, filename_pattern, github_repo
-   )
-   if not save_path then
-      return false
-   end
-   backup_old_installed(pkg_id)
-   local ok = install_tarball(pkg_id, save_path)
-   if ok then
-      write_version(pkg_id, remote_version)
    end
    return ok
 end

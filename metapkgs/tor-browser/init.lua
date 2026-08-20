@@ -30,7 +30,7 @@ function m.install ()
    download_url = "https://www.torproject.org/dist/torbrowser/%s/%s"
    download_url = string.format(download_url, remote_version, filename)
 
-   save_path = download_file(pkg_id, filename, download_url)
+   save_path = download_file(pkg_id, download_url, filename)
 
    if not save_path then
       return false

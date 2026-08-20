@@ -12,7 +12,7 @@ function m.install ()
    filename = "tsetup.tar.xz"
    download_url = "https://telegram.org/dl/desktop/linux"
 
-   save_path = download_file(pkg_id, filename, download_url)
+   save_path = download_file(pkg_id, download_url, filename)
 
    backup_old_installed(pkg_id)
    ok = install_tarball(pkg_id, save_path)
