@@ -180,16 +180,16 @@ function fetch_github_release (pkg_id, github_repo, filename_pattern, api_url)
       return false
    end
 
-   local download_url, remote_version
+   local remote_version, download_url
    for _, r in ipairs(releases) do
+      remote_version = r.tag_name:match("[%d%.]+")
       for _, a in ipairs(r.assets) do
          if a.name:match(filename_pattern) then
             download_url = a.browser_download_url
             break
          end
       end
-      if download_url then
-         remote_version = r.tag_name:match("[%d%.]+")
+      if remote_version and download_url then
          break
       end
    end
