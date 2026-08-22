@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Drawio
 Icon=drawio
-Exec=_EXEC_
+Exec=
 Terminal=false
 Type=Application
 Categories=Development;
