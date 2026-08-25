@@ -504,16 +504,19 @@ function enable (pkg_id, exec_path)
       io.stderr:write(string.format("exec_path not found for '%s'", pkg_id))
       os.exit(1)
    end
+   local text
    for _, file_name in ipairs(names) do
       file_path = mod_dir .. "/" .. file_name
       dest_path = entries_dir .. "/" .. file_name
-      cmdll = "sed s#Exec=#Exec=%s# %s > %s"
-      cmdll = string.format(cmdll, exec_path, file_path, dest_path)
-      ok = os.execute(cmdll)
-      if ok then
-         print(string.format("[%s] installed '%s'", pkg_id, tilde_path(dest_path)))
-         os.execute("update-desktop-database " .. entries_dir)
-      end
+      f = io.open(file_path, "r")
+      text = f:read("a")
+      f:close()
+      text = text:gsub("Exec=", "Exec=" .. exec_path)
+      f = io.open(dest_path, "w")
+      f:write(text)
+      f:close()
+      print(string.format("[%s] installed '%s'", pkg_id, tilde_path(dest_path)))
+      os.execute("update-desktop-database " .. entries_dir)
    end
 end
 
