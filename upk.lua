@@ -1,7 +1,7 @@
 #!/bin/lua
 
 --------------------------------------------------------------------------------
--- helpers
+-- usage
 --------------------------------------------------------------------------------
 
 help_info = [=[
@@ -18,6 +18,29 @@ usage: upk.lua <sub_cmd> [app_id]
 function print_help ()
    io.write(help_info)
 end
+
+if #arg == 0 then
+   print_help()
+   os.exit(1)
+end
+
+cmds = {
+   install = 1, update = 1, remove = 1,
+   enable = 1, disable = 1, lock = 1, unlock = 1,
+   launch = 1, list = 1, clean = 1
+}
+
+sub_cmd = arg[1]
+if sub_cmd == "-h" or sub_cmd == "--help" then
+   print_help()
+elseif not cmds[sub_cmd] then
+   print_help()
+   os.exit(1)
+end
+
+--------------------------------------------------------------------------------
+-- helpers
+--------------------------------------------------------------------------------
 
 function dir_exists (path)
    -- appending a trailing slash works across both Unix and Windows systems
@@ -44,7 +67,11 @@ end
 
 function exists_or_mkdir (path)
    if not dir_exists(path) then
-      os.execute("mkdir -p " .. path)
+      local ok = os.execute("mkdir -p " .. path)
+      if not ok then
+         io.stderr:write(string.format("mkdir failed: %s\n", path))
+         os.exit(1)
+      end
    end
 end
 
@@ -54,7 +81,7 @@ function assert_cmd (cmd)
    end
    local ok = os.execute(string.format("command -v %s &>/dev/null", cmd))
    if not ok then
-      io.stderr:write(string.format("command not found: \n", cmd))
+      io.stderr:write(string.format("command not found: %s\n", cmd))
       os.exit(1)
    end
 end
@@ -93,7 +120,7 @@ exists_or_mkdir(entries_dir)
 exists_or_mkdir(icons_dir)
 exists_or_mkdir(fonts_dir)
 
-if upk_data_dir and dir_exists(upk_data_dir) then
+if upk_data_dir then
    data_dir = upk_data_dir
 else
    data_dir = home_dir .. "/upk.d"
@@ -630,6 +657,10 @@ function clean_cache (tag)
    end
 end
 
+--------------------------------------------------------------------------------
+-- args
+--------------------------------------------------------------------------------
+
 cmds = {
    install = 1, update = 1, remove = 1,
    enable = 1, disable = 1, lock = 1, unlock = 1
@@ -701,15 +732,4 @@ elseif sub_cmd == "list" then
    list_info()
 elseif sub_cmd == "clean" then
    clean_cache(arg[2])
-elseif sub_cmd == "-h" or sub_cmd == "--help" then
-   print_help()
-elseif sub_cmd == "test" then
-else
-   print_help()
-   os.exit(1)
-end
-
-if #arg == 0 then
-   print_help()
-   os.exit(1)
 end
