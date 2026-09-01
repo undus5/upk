@@ -63,7 +63,7 @@ function m.install (channel)
    api_url = api_url .. "/releases/tags/v" .. remote_version
 
    local remote_version, download_url, filename = fetch_github_release(
-      pkg_id, github_repo, filename_pattern, api_url
+      pkg_id, github_repo, filename_pattern, api_url, "quiet"
    )
    if not remote_version then
       return false

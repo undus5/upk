@@ -168,7 +168,7 @@ end
 -- metapkg installation functions
 --------------------------------------------------------------------------------
 
-function fetch_github_release (pkg_id, github_repo, filename_pattern, api_url)
+function fetch_github_release (pkg_id, github_repo, filename_pattern, api_url, quiet)
    local lversion = local_version(pkg_id)
    if lversion == "locked" then
       return false
@@ -186,7 +186,9 @@ function fetch_github_release (pkg_id, github_repo, filename_pattern, api_url)
    file_ext = filename_pattern:match("%.tar%.%l+") or file_ext
    file_ext = filename_pattern:match("%.AppImage") or file_ext
 
-   io.write(string.format("[%s] fetching release info ... ", pkg_id))
+   if not quiet then
+      io.write(string.format("[%s] fetching release info ... ", pkg_id))
+   end
 
    -- https://github.com/rxi/json.lua
    local json = require("json")
@@ -226,10 +228,14 @@ function fetch_github_release (pkg_id, github_repo, filename_pattern, api_url)
    local outdated = is_local_version_outdated(pkg_id, remote_version)
 
    if outdated and download_url then
-      io.write("outdated\n")
+      if not quiet then
+         io.write("outdated\n")
+      end
       return remote_version, download_url, filename
    else
-      io.write("up to date\n")
+      if not quiet then
+         io.write("up to date\n")
+      end
    end
 
    return false
