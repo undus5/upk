@@ -485,7 +485,7 @@ function enable (pkg_id, exec_path)
    local cmdl, f, file_path, dest_path, cmdll, ok, names
 
    cmdl = "find " .. mod_dir .. " -mindepth 1 -maxdepth 1 -type f"
-   cmdl = cmdl .. " -name '*.png' -exec basename {} \\;"
+   cmdl = cmdl .. " \\( -name '*.png' -o -name '*.svg' \\) -exec basename {} \\;"
    f = io.popen(cmdl)
    for file_name in f:lines() do
       file_path = mod_dir .. "/" .. file_name
@@ -531,7 +531,7 @@ function disable (pkg_id)
    local cmdl, f, dest_path, cmdll, ok
 
    cmdl = "find " .. mod_dir .. " -mindepth 1 -maxdepth 1 -type f"
-   cmdl = cmdl .. " -name '*.png' -exec basename {} \\;"
+   cmdl = cmdl .. " \\( -name '*.png' -o -name '*.svg' \\) -exec basename {} \\;"
    f = io.popen(cmdl)
    for file_name in f:lines() do
       dest_path = icons_dir .. "/" .. file_name

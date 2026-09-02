@@ -23,7 +23,7 @@ function m.install ()
 end
 
 function m.enable ()
-   enable(pkg_id)
+   enable(pkg_id, exec_path)
 end
 
 return m
