@@ -4,10 +4,10 @@ pkg_id = "ibkr-tws"
 exec_path = string.format("%s/%s/ibkr-tws.sh", apps_dir, pkg_id)
 
 function m.install ()
-   local lversion, filename, save_path, download_url
+   local local_version, filename, save_path, download_url
    local unpacked_dir, installed_dir, cmdl, ok
-   lversion = local_version(pkg_id)
-   if lversion and lversion == "locked" then
+   local_version = get_local_version(pkg_id)
+   if local_version and local_version == "locked" then
       return false
    end
    filename = "tws-latest-linux-x64.sh"

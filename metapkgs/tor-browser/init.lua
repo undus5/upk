@@ -19,8 +19,8 @@ end
 function m.install ()
    local remote_version, filename, save_path, download_url, ok
 
-   local lversion = local_version(pkg_id)
-   if lversion and lversion == "locked" then
+   local local_version = get_local_version(pkg_id)
+   if local_version and local_version == "locked" then
       return false
    end
 

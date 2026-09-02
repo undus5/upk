@@ -35,13 +35,13 @@ function fetch_remote_version (channel)
 end
 
 function m.install (channel)
-   local lversion, remote_version, outdated, filename, download_url
+   local local_version, remote_version, outdated, filename, download_url
    local json_table, save_path, ok
 
    local pkg_id = get_pkg_id(channel)
 
-   lversion = local_version(pkg_id)
-   if lversion == "locked" then
+   local_version = get_local_version(pkg_id)
+   if local_version == "locked" then
       return false
    end
 

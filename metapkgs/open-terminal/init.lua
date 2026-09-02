@@ -6,9 +6,9 @@ cli_name_xdg = "xdg-terminal-exec"
 exec_path = string.format("%s/%s/%s", apps_dir, pkg_id, cli_name) 
 
 function m.install ()
-   local lversion, ok
-   lversion = local_version(pkg_id)
-   if lversion == "locked" then
+   local local_version, ok
+   local_version = get_local_version(pkg_id)
+   if local_version == "locked" then
       return false
    end
    ok = install_cli_script(pkg_id, cli_name)

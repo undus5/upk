@@ -4,8 +4,8 @@ pkg_id = "aria2"
 cli_name = "aria2.sh"
 
 function m.install ()
-   local lversion = local_version(pkg_id)
-   if lversion and lversion == "locked" then
+   local local_version = get_local_version(pkg_id)
+   if local_version and local_version == "locked" then
       return false
    end
    install_cli_script(pkg_id, cli_name)

@@ -169,8 +169,8 @@ end
 --------------------------------------------------------------------------------
 
 function fetch_github_release (pkg_id, github_repo, filename_pattern, api_url, quiet)
-   local lversion = local_version(pkg_id)
-   if lversion == "locked" then
+   local local_version = get_local_version(pkg_id)
+   if local_version == "locked" then
       return false
    end
 
@@ -249,29 +249,38 @@ function is_local_version_outdated (pkg_id, remote_version)
 
    local outdated = false
 
-   local lversion = local_version(pkg_id)
-   if not lversion then
+   local local_version = get_local_version(pkg_id)
+   if not local_version then
       outdated = true
       return outdated
    end
 
-   local remote_xyz = {}
-   for v in remote_version:gmatch("[^%.]+") do
-      table.insert(remote_xyz, tonumber(v))
-   end
-   local local_xyz = {}
-   for v in lversion:gmatch("[^%.]+") do
-      table.insert(local_xyz, tonumber(v))
-   end
+   outdated = compare_dot_version(remote_version, local_version)
+   return outdated
+end
 
-   for i, v in ipairs(remote_xyz) do
-      if not local_xyz[i] or remote_xyz[i] > local_xyz[i] then
-         outdated = true
+function compare_dot_version (version_a, version_b)
+   local xyz_a = {}
+   for v in version_a:gmatch("[^%.]+") do
+      table.insert(xyz_a, tonumber(v))
+   end
+   local xyz_b = {}
+   for v in version_b:gmatch("[^%.]+") do
+      table.insert(xyz_b, tonumber(v))
+   end
+   local a_gt_b = false
+   for i, v in ipairs(xyz_a) do
+      if not xyz_b[i] then
+         xyz_b[i] = 0
+      end
+      if xyz_a[i] > xyz_b[i] then
+         a_gt_b = true
+         break
+      elseif xyz_a[i] < xyz_b[i] then
          break
       end
    end
-
-   return outdated
+   return a_gt_b
 end
 
 function github_curl_cmdl (url)
@@ -579,15 +588,15 @@ function write_version (pkg_id, version)
    end
 end
 
-function local_version (pkg_id)
+function get_local_version (pkg_id)
    local path = string.format("%s/%s.txt", vers_dir, pkg_id)
    local f = io.open(path, "r")
-   local lversion
+   local local_version
    if f then
-      lversion = f:read("l")
+      local_version = f:read("l")
       f:close()
-      if lversion and string.len(lversion) > 0 then
-         return lversion
+      if local_version and string.len(local_version) > 0 then
+         return local_version
       else
          return false
       end
@@ -625,7 +634,7 @@ function metapkg_list ()
    end
    f:close()
    for _, v in ipairs(pkg_list) do
-      v.version = local_version(v.pkg_id)
+      v.version = get_local_version(v.pkg_id)
    end
    return pkg_list
 end

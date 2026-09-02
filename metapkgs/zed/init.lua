@@ -4,8 +4,8 @@ pkg_id = "zed"
 exec_path = string.format("%s/%s/bin/zed", apps_dir, pkg_id)
 
 function m.install ()
-   local lversion = local_version(pkg_id)
-   if lversion and lversion == "locked" then
+   local local_version = get_local_version(pkg_id)
+   if local_version and local_version == "locked" then
       return false
    end
    local github_repo = "zed-industries/zed"

@@ -61,11 +61,11 @@ end
 
 function is_local_version_outdated (remote_version)
    local rsplit, lsplit, rvers, lvers = {}, {}, {}, {}
-   local lversion = local_version(pkg_id)
-   if not lversion then
+   local local_version = get_local_version(pkg_id)
+   if not local_version then
       return true
    end
-   if lversion == "locked" then
+   if local_version == "locked" then
       return false
    end
 
@@ -77,7 +77,7 @@ function is_local_version_outdated (remote_version)
    end
    table.insert(rvers, rsplit[2])
 
-   for s in lversion:gmatch("[^%-]+") do
+   for s in local_version:gmatch("[^%-]+") do
       table.insert(lsplit, s)
    end
    for s in lsplit[1]:gmatch("[^%.]+") do
@@ -94,11 +94,11 @@ function is_local_version_outdated (remote_version)
 end
 
 function m.install ()
-   local lversion, remote_version, outdated, filename, download_url
+   local local_version, remote_version, outdated, filename, download_url
    local save_path, ok
 
-   lversion = local_version(pkg_id)
-   if lversion == "locked" then
+   local_version = get_local_version(pkg_id)
+   if local_version == "locked" then
       return false
    end
 
