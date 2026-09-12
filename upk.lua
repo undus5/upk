@@ -422,7 +422,8 @@ function install_tarball (pkg_id, save_path, type)
 end
 
 -- for caddy.sh, filebrowser.sh
-function install_cli_script (pkg_id, cli_name)
+function install_cli_script (pkg_id, cli_path)
+   local cli_name = cli_path:match("/%w+$"):sub(2)
    local installed_dir = string.format("%s/%s", apps_dir, pkg_id)
    local cli_path_src = metapkg_dir .. "/" .. pkg_id .. "/" .. cli_name
    local cli_path_dst = installed_dir .. "/" .. cli_name
@@ -435,11 +436,12 @@ function install_cli_script (pkg_id, cli_name)
    return ok
 end
 
-function enable_cli (pkg_id, cli_name)
-   if not cli_name then
+function enable_cli (pkg_id, cli_path)
+   if not cli_path then
       return false
    end
-   local cli_path_rel = string.format("../apps/%s/%s", pkg_id, cli_name)
+   local cli_name = cli_path:match("/%w+$"):sub(2)
+   local cli_path_rel = cli_path:gsub(apps_dir, "../apps")
    local cli_path_link = bins_dir .. "/" .. cli_name
    local cmdl = "cd %s; ln -sf %s %s"
    cmdl = string.format(cmdl, bins_dir, cli_path_rel, cli_path_link)
@@ -449,10 +451,11 @@ function enable_cli (pkg_id, cli_name)
    end
 end
 
-function disable_cli (pkg_id, cli_name)
-   if not cli_name then
+function disable_cli (pkg_id, cli_path)
+   if not cli_path then
       return false
    end
+   local cli_name = cli_path:match("/%w+$"):sub(2)
    local cli_path_link = bins_dir .. "/" .. cli_name
    local ok = os.execute("rm " .. cli_path_link)
    if ok then

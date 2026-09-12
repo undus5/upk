@@ -1,7 +1,7 @@
 m = {}
 
 pkg_id = "lazygit"
-cli_name = pkg_id
+exec_path = string.format("%s/%s/%s", apps_dir, pkg_id, pkg_id)
 
 function m.install ()
    local github_repo = "jesseduffield/lazygit"
@@ -13,11 +13,11 @@ function m.install ()
 end
 
 function m.enable ()
-   enable_cli(pkg_id, cli_name)
+   enable_cli(pkg_id, exec_path)
 end
 
 function m.disable ()
-   disable_cli(pkg_id, cli_name)
+   disable_cli(pkg_id, exec_path)
 end
 
 return m
