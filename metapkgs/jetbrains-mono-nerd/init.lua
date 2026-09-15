@@ -36,4 +36,8 @@ function m.install ()
    end
 end
 
+function m.remove ()
+   remove(pkg_id, installed_dir)
+end
+
 return m

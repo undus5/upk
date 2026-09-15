@@ -377,9 +377,11 @@ function install_binfile (pkg_id, save_path, exec_path)
    return ok
 end
 
-function install_tarball (pkg_id, save_path, type)
+function install_tarball (pkg_id, save_path, type, installed_dir)
    local unpacked_dir = cache_dir .. "/" .. pkg_id
-   local installed_dir = string.format("%s/%s", apps_dir, pkg_id)
+   if not installed_dir then
+      installed_dir = string.format("%s/%s", apps_dir, pkg_id)
+   end
 
    local unpack_cmd = string.format("tar xf %s -C %s;", save_path, unpacked_dir)
    if type == "unzip" then
