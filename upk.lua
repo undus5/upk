@@ -442,7 +442,7 @@ function enable_cli (pkg_id, cli_path)
    if not cli_path then
       return false
    end
-   local cli_name = cli_path:match("/%w+$"):sub(2)
+   local cli_name = cli_path:match("/[%w%-%.]+$"):sub(2)
    local cli_path_rel = cli_path:gsub(apps_dir, "../apps")
    local cli_path_link = bins_dir .. "/" .. cli_name
    local cmdl = "cd %s; ln -sf %s %s"
@@ -457,7 +457,7 @@ function disable_cli (pkg_id, cli_path)
    if not cli_path then
       return false
    end
-   local cli_name = cli_path:match("/%w+$"):sub(2)
+   local cli_name = cli_path:match("/[%w%-%.]+$"):sub(2)
    local cli_path_link = bins_dir .. "/" .. cli_name
    local ok = os.execute("rm " .. cli_path_link)
    if ok then
