@@ -2,7 +2,6 @@ m = {}
 
 pkg_id = "ventoy"
 cli_path = string.format("%s/%s/ventoy-cli.sh", apps_dir, pkg_id)
-exec_path = string.format("%s/%s/ventoy-gui.sh", apps_dir, pkg_id)
 
 function m.install ()
    local github_repo = "ventoy/Ventoy"
@@ -21,12 +20,10 @@ function m.install ()
 end
 
 function m.enable ()
-   enable(pkg_id, exec_path)
    enable_cli(pkg_id, cli_path)
 end
 
 function m.disable ()
-   disable(pkg_id)
    disable_cli(pkg_id, cli_path)
 end
 
