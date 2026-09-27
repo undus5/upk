@@ -12,6 +12,7 @@ function m.install ()
       ok = install_cli_script(pkg_id, exec_path)
    end
    if ok then
+      lock(pkg_id)
       m.enable()
    end
 end
