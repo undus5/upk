@@ -1,6 +1,6 @@
 m = {}
 
-pkg_id = "port-proton-qt"
+pkg_id = "portproton-qt"
 exec_path = string.format("%s/%s/%s.AppImage", apps_dir, pkg_id, pkg_id)
 
 function m.install ()

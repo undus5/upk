@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=PortProtonQt
-Icon=port-proton-qt
+Icon=portproton-qt
 Exec= %u
 Type=Application
 Terminal=false
