@@ -425,7 +425,7 @@ end
 
 -- for caddy.sh, filebrowser.sh
 function install_cli_script (pkg_id, cli_path)
-   local cli_name = cli_path:match("/%w+$"):sub(2)
+   local cli_name = cli_path:match("/[%w%-%.]+$"):sub(2)
    local installed_dir = string.format("%s/%s", apps_dir, pkg_id)
    local cli_path_src = metapkg_dir .. "/" .. pkg_id .. "/" .. cli_name
    local cli_path_dst = installed_dir .. "/" .. cli_name
